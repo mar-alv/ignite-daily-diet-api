@@ -2,8 +2,9 @@ import { FastifyInstance } from 'fastify'
 import { randomUUID } from 'node:crypto'
 import { z } from 'zod'
 
+import { addUser, getUserBySessionId } from '../../lib/knex'
 import { checkIfSessionIdExists } from '../middlewares/check-if-session-id-exists'
-import { knex } from '../database'
+import { CreateUser } from '../../interfaces/user'
 
 export async function usersRoutes(app: FastifyInstance) {
   app.post('/', async (request, reply) => {
@@ -40,7 +41,7 @@ export async function usersRoutes(app: FastifyInstance) {
       })
     }
 
-    await knex('users').insert({
+    const user: CreateUser = {
       id: randomUUID(),
       session_id: sessionId,
       name,
@@ -48,7 +49,9 @@ export async function usersRoutes(app: FastifyInstance) {
       height,
       weight,
       sex,
-    })
+    }
+
+    await addUser(user)
 
     return reply.status(201).send()
   })
@@ -61,10 +64,7 @@ export async function usersRoutes(app: FastifyInstance) {
     async (request) => {
       const { sessionId } = request.cookies
 
-      const user = await knex('users')
-        .select('name', 'age', 'height', 'weight', 'sex')
-        .where('session_id', sessionId)
-        .first()
+      const user = await getUserBySessionId('sessionId')
 
       return { user }
     },
