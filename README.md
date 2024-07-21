@@ -53,15 +53,15 @@ npm run tests-e2e
 
 #### <a id='en-endpoints' style='text-decoration: none; color: inherit;'>⚡ Endpoints</a>
 In order to make requests to the server with 🥧 HTTPie directly from the terminal, you would have to follow its CLI [installation guide](https://httpie.io/docs/cli/main-features)
-##### POST endpoint title
-POST endpoint description of what it does
+##### Create user
+Creates a new user
 ```sh
-curl -X POST http://localhost:3001/route -h "Content-Type: application/json" -d '{"request_body":"here"}'
+curl -X POST http://localhost:3001/users -h "Content-Type: application/json" -d '{"name": "mar alv","age": 30,"height": 210,"weight": 100,"sex": "masculine"}'
 ```
 
 With 🥧 HTTPie
 ```sh
-http POST http://localhost:3001/route < httpie/post.json
+http POST http://localhost:3001/users < httpie/create-user.json
 ```
 
 Responses
@@ -70,12 +70,128 @@ Responses
 
 HTTP/1.1 201 Created
 Connection: keep-alive
-Content-type: application/json
+set-cookie: sessionId=39cad374-1d58-48e3-bb3b-e63cdaf76163; Max-Age=604800; Path=/
 
-# When not providing a valid request body
+# When not providing an attribute
 
 HTTP/1.1 400 Bad Request
-Content-type: application/json
+Connection: keep-alive
+content-type: application/json; charset=utf-8
+
+{
+    "errors": {
+        "age": [
+            "Required"
+        ],
+				...
+    },
+    "message": "Invalid input"
+}
+
+# When providing a name that is too short
+
+HTTP/1.1 400 Bad Request
+Connection: keep-alive
+content-type: application/json; charset=utf-8
+
+{
+    "errors": {
+        "name": [
+            "Name must be at least 3 characters long"
+        ]
+    },
+    "message": "Invalid input"
+}
+
+# When providing an age below 12 years
+
+HTTP/1.1 400 Bad Request
+Connection: keep-alive
+content-type: application/json; charset=utf-8
+
+{
+    "errors": {
+        "age": [
+            "Age must be at least 12 years old"
+        ]
+    },
+    "message": "Invalid input"
+}
+
+# When providing an age above 110 years
+
+HTTP/1.1 400 Bad Request
+Connection: keep-alive
+content-type: application/json; charset=utf-8
+
+{
+    "errors": {
+        "age": [
+            "Age must be no more than 110 years old"
+        ]
+    },
+    "message": "Invalid input"
+}
+
+# When providing a height below 130cm
+
+HTTP/1.1 400 Bad Request
+Connection: keep-alive
+content-type: application/json; charset=utf-8
+
+{
+    "errors": {
+        "height": [
+            "Height must be at least 130 cm"
+        ]
+    },
+    "message": "Invalid input"
+}
+
+# When providing a height above 270cm
+
+HTTP/1.1 400 Bad Request
+Connection: keep-alive
+content-type: application/json; charset=utf-8
+
+{
+    "errors": {
+        "height": [
+            "Height must be no more than 270 cm"
+        ]
+    },
+    "message": "Invalid input"
+}
+
+# When providing a weight below 30kg
+
+HTTP/1.1 400 Bad Request
+Connection: keep-alive
+content-type: application/json; charset=utf-8
+
+{
+    "errors": {
+        "weight": [
+            "Weight must be at least 30 kg"
+        ]
+    },
+    "message": "Invalid input"
+}
+
+# When providing an invalid sex
+
+HTTP/1.1 400 Bad Request
+Connection: keep-alive
+content-type: application/json; charset=utf-8
+
+{
+    "errors": {
+        "sex": [
+            "Please select either "masculine" or "feminine" as your sex"
+        ]
+    },
+    "message": "Invalid input"
+}
 ```
 
 ##### GET endpoint title
