@@ -429,13 +429,22 @@ content-type: application/json; charset=utf-8
 
 #### <a id='en-structure' style='text-decoration: none; color: inherit;'>📂 Structure</a>
 ```
+│ @types/
+│   └── ... custom typing for the database tables
+│ db/
+│   ├── migrations/
+│   │     └── ... generated database migrations
+│   └── ... database of each enviroment
+│ httpie/
+│   └── ... files to easily test the endpoints from the terminal
 │ src/
+│   ├── errors/
+│   │     └── ... custom error classes
+│   ├── middlewares/
+│   │     └── ... functions to intercept and modify the requests and responses
+│   ├── routes/
+│   │     └── ... grouped server's routes
 │   └── ...
-│ stories/
-│   ├── components/
-│   │     └── ... stories of the components
-│   ├── ... generic stories (color, icons e typography)
-│   └── ... stories-utils.tsx // util functions for stories
 │ tests/
 │   └── ... end-to-end tests
 ```
@@ -859,7 +868,21 @@ content-type: application/json; charset=utf-8
 
 #### <a id='pt-br-estrutura' style='text-decoration: none; color: inherit;'>📂 Estrutura</a>
 ```
+│ @types/
+│   └── ... tipagem customizada para as tabelas do banco de dados
+│ db/
+│   ├── migrations/
+│   │     └── ... migrações geradas do banco de dados
+│   └── ... banco de dados de cada ambiente
+│ httpie/
+│   └── ... arquivos para facilmente testar os endpoints pelo terminal
 │ src/
+│   ├── errors/
+│   │     └── ... classes customizadas de erro
+│   ├── middlewares/
+│   │     └── ... funções para interceptar e modificar as requisições e respostas
+│   ├── routes/
+│   │     └── ... rotas agrupadas do servidor
 │   └── ...
 │ tests/
 │   └── ... testes end-to-end
