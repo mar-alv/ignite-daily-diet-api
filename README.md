@@ -323,9 +323,13 @@ Response
 ```
 HTTP/1.1 404 Not Found
 Connection: keep-alive
-Content-type: application/json
+content-type: application/json; charset=utf-8
 
-"Route not found"
+{
+    "error": "Not Found",
+    "message": "Route POST:/route not found",
+    "statusCode": 404
+}
 ```
 
 #### <a id='en-structure' style='text-decoration: none; color: inherit;'>📂 Structure</a>
@@ -384,15 +388,15 @@ npm run tests-e2e
 
 ##### <a id='pt-br-endpoints' style='text-decoration: none; color: inherit;'>⚡ Endpoints</a>
 Para fazer requisições ao servidor com 🥧 HTTPie diretamente do terminal, é necessário seguir o [guia de instalação](https://httpie.io/docs/cli/main-features) da CLI
-##### Título do endpoint POST
-Descrição do que o endpoint POST faz
+##### Criar usuário
+Cria um novo usuário
 ```sh
-curl -X POST http://localhost:3001/rota -h "Content-Type: application/json" -d '{"corpo_da_requisicao":"aqui"}'
+curl -X POST http://localhost:3001/users -h "Content-Type: application/json" -d '{"name": "mar alv","age": 30,"height": 210,"weight": 100,"sex": "masculine"}'
 ```
 
 Com 🥧 HTTPie
 ```sh
-http POST http://localhost:3001/rota < httpie/post.json
+http POST http://localhost:3001/users < httpie/create-user.json
 ```
 
 Respostas
@@ -401,12 +405,128 @@ Respostas
 
 HTTP/1.1 201 Created
 Connection: keep-alive
-Content-type: application/json
+set-cookie: sessionId=39cad374-1d58-48e3-bb3b-e63cdaf76163; Max-Age=604800; Path=/
 
-# Ao enviar um corpo de requisição inválido
+# Ao não enviar um atributo
 
 HTTP/1.1 400 Bad Request
-Content-type: application/json
+Connection: keep-alive
+content-type: application/json; charset=utf-8
+
+{
+    "errors": {
+        "age": [
+            "Required"
+        ],
+				...
+    },
+    "message": "Invalid input"
+}
+
+# Ao enviar um nome muito curto
+
+HTTP/1.1 400 Bad Request
+Connection: keep-alive
+content-type: application/json; charset=utf-8
+
+{
+    "errors": {
+        "name": [
+            "Name must be at least 3 characters long"
+        ]
+    },
+    "message": "Invalid input"
+}
+
+# Ao enviar uma idade abaixo de 12 anos
+
+HTTP/1.1 400 Bad Request
+Connection: keep-alive
+content-type: application/json; charset=utf-8
+
+{
+    "errors": {
+        "age": [
+            "Age must be at least 12 years old"
+        ]
+    },
+    "message": "Invalid input"
+}
+
+# Ao enviar uma idade acima de 100 anos
+
+HTTP/1.1 400 Bad Request
+Connection: keep-alive
+content-type: application/json; charset=utf-8
+
+{
+    "errors": {
+        "age": [
+            "Age must be no more than 110 years old"
+        ]
+    },
+    "message": "Invalid input"
+}
+
+# Ao enviar uma altura abaixo de 130cm
+
+HTTP/1.1 400 Bad Request
+Connection: keep-alive
+content-type: application/json; charset=utf-8
+
+{
+    "errors": {
+        "height": [
+            "Height must be at least 130 cm"
+        ]
+    },
+    "message": "Invalid input"
+}
+
+# Ao enviar uma altura acima de 270cm
+
+HTTP/1.1 400 Bad Request
+Connection: keep-alive
+content-type: application/json; charset=utf-8
+
+{
+    "errors": {
+        "height": [
+            "Height must be no more than 270 cm"
+        ]
+    },
+    "message": "Invalid input"
+}
+
+# Ao enviar um peso abaixo de 30kg
+
+HTTP/1.1 400 Bad Request
+Connection: keep-alive
+content-type: application/json; charset=utf-8
+
+{
+    "errors": {
+        "weight": [
+            "Weight must be at least 30 kg"
+        ]
+    },
+    "message": "Invalid input"
+}
+
+# Ao enviar um sexo inválido
+
+HTTP/1.1 400 Bad Request
+Connection: keep-alive
+content-type: application/json; charset=utf-8
+
+{
+    "errors": {
+        "sex": [
+            "Please select either "masculine" or "feminine" as your sex"
+        ]
+    },
+    "message": "Invalid input"
+}
 ```
 
 ##### Título do endpoint GET
@@ -538,9 +658,13 @@ Resposta
 ```
 HTTP/1.1 404 Not Found
 Connection: keep-alive
-Content-type: application/json
+content-type: application/json; charset=utf-8
 
-"Route not found"
+{
+    "error": "Not Found",
+    "message": "Route POST:/route not found",
+    "statusCode": 404
+}
 ```
 
 #### <a id='pt-br-estrutura' style='text-decoration: none; color: inherit;'>📂 Estrutura</a>
