@@ -48,7 +48,7 @@ npm run dev
 ##### <a id='en-e2e-tests' style='text-decoration: none; color: inherit;'>🏁 Run End-To-End Tests</a>
 Paste the command into a terminal, they will be exectued one after the other mentioning if there were failed tests
 ```sh
-npm run tests-e2e
+npm run test
 ```
 
 #### <a id='en-endpoints' style='text-decoration: none; color: inherit;'>⚡ Endpoints</a>
@@ -248,6 +248,111 @@ content-type: application/json; charset=utf-8
 }
 ```
 
+##### Create plate
+Creates a new plate for a specific user
+```sh
+curl -X POST http://localhost:3001/plates -h "Content-Type: application/json" -d '{"userId":"835fc927-94e8-4bda-be46-db2f12dca0f9","name":"Grilled Chicken Salad","description":"A fresh salad with grilled chicken, mixed greens, and a light vinaigrette.","inDiet":true}'
+```
+
+With 🥧 HTTPie
+```sh
+http POST http://localhost:3001/plates < httpie/create-plate.json
+```
+
+Responses
+```
+# When successfully doing it
+
+HTTP/1.1 201 Created
+Connection: keep-alive
+content-type: application/json; charset=utf-8
+
+{
+    "plateId": "8a07b00e-e396-4f03-b3f0-d2e850fc177e"
+}
+
+# When not providing an attribute
+
+HTTP/1.1 400 Bad Request
+Connection: keep-alive
+content-type: application/json; charset=utf-8
+
+{
+    "errors": {
+        "userId": [
+            "Required"
+        ],
+				...
+    },
+    "message": "Invalid input"
+}
+
+# When providing a valid user id
+
+HTTP/1.1 400 Bad Request
+Connection: keep-alive
+content-type: application/json; charset=utf-8
+
+{
+    "errors": {
+        "userId": [
+            "A valid user ID is required."
+        ]
+    },
+    "message": "Invalid input"
+}
+
+# When providing a name that is too short
+
+HTTP/1.1 400 Bad Request
+Connection: keep-alive
+content-type: application/json; charset=utf-8
+
+{
+    "errors": {
+        "name": [
+            "Name must be at least 2 characters long"
+        ]
+    },
+    "message": "Invalid input"
+}
+
+# When providing an invalid specification of the plate belonging to the diet
+
+HTTP/1.1 400 Bad Request
+Connection: keep-alive
+content-type: application/json; charset=utf-8
+
+{
+    "errors": {
+        "inDiet": [
+            "Please specify if the plate is on a diet."
+        ]
+    },
+    "message": "Invalid input"
+}
+
+# When being unauthorized
+
+HTTP/1.1 401 Unauthorized
+Connection: keep-alive
+content-type: application/json; charset=utf-8
+
+{
+    "error": "Unauthorized"
+}
+
+# When not finding the user
+
+HTTP/1.1 404 Not Found
+Connection: keep-alive
+content-type: application/json; charset=utf-8
+
+{
+    "error": "User not found"
+}
+```
+
 ##### PUT endpoint title
 PUT endpoint description of what it does
 ```sh
@@ -289,32 +394,6 @@ curl -X DELETE http://localhost:3001/route/123 -h "Content-Type: application/jso
 With 🥧 HTTPie
 ```sh
 http DELETE http://localhost:3001/tasks/123
-```
-
-Responses
-```
-# When successfully doing it
-
-HTTP/1.1 204 No Content
-Connection: keep-alive
-Content-type: application/json
-
-# When not finding it by the id
-
-HTTP/1.1 404 Not Found
-Connection: keep-alive
-Content-type: application/json
-```
-
-##### PATCH endpoint title
-PATCH endpoint description of what it does
-```sh
-curl -X PATCH http://localhost:3001/route/123/something -h "Content-Type: application/json"
-```
-
-With 🥧 HTTPie
-```sh
-http PATCH http://localhost:3001/route/123/something
 ```
 
 Responses
@@ -396,10 +475,10 @@ Cole o comando em um terminal, o servidor estará acessível pela porta 3001
 npm run dev
 ```
 
-##### <a id='pt-br-testes-unitarios' style='text-decoration: none; color: inherit;'>📋 Rodar Testes Unitários</a>
+##### <a id='pt-br-testes-e2e' style='text-decoration: none; color: inherit;'>🏁 Rodar Testes End-To-End</a>
 Cole o comando em um terminal, eles serão executados um após o outro apontando se houve testes falhos
 ```sh
-npm run tests-e2e
+npm run test
 ```
 
 ##### <a id='pt-br-endpoints' style='text-decoration: none; color: inherit;'>⚡ Endpoints</a>
@@ -599,6 +678,111 @@ content-type: application/json; charset=utf-8
 }
 ```
 
+##### Criar refeição
+Cria uma nova refeição para um usuário específico
+```sh
+curl -X POST http://localhost:3001/users -h "Content-Type: application/json" -d '{"userId":"835fc927-94e8-4bda-be46-db2f12dca0f9","name":"Salada de Frango Grelhado","description":"Uma salada fresca com frango grelhado, folhas verdes e um vinagrete leve.","inDiet":true}'
+```
+
+Com 🥧 HTTPie
+```sh
+http POST http://localhost:3001/plates < httpie/create-plate.json
+```
+
+Respostas
+```
+# Ao fazer isso com sucesso
+
+HTTP/1.1 201 Created
+Connection: keep-alive
+content-type: application/json; charset=utf-8
+
+{
+    "plateId": "8a07b00e-e396-4f03-b3f0-d2e850fc177e"
+}
+
+# Ao não enviar um atributo
+
+HTTP/1.1 400 Bad Request
+Connection: keep-alive
+content-type: application/json; charset=utf-8
+
+{
+    "errors": {
+        "userId": [
+            "Required"
+        ],
+				...
+    },
+    "message": "Invalid input"
+}
+
+# Ao enviar um id de usuário inválido
+
+HTTP/1.1 400 Bad Request
+Connection: keep-alive
+content-type: application/json; charset=utf-8
+
+{
+    "errors": {
+        "userId": [
+            "A valid user ID is required."
+        ]
+    },
+    "message": "Invalid input"
+}
+
+# Ao enviar um nome muito curto
+
+HTTP/1.1 400 Bad Request
+Connection: keep-alive
+content-type: application/json; charset=utf-8
+
+{
+    "errors": {
+        "name": [
+            "Name must be at least 2 characters long"
+        ]
+    },
+    "message": "Invalid input"
+}
+
+# Ao enviar uma especificidade inválida do prato pertencer à dieta
+
+HTTP/1.1 400 Bad Request
+Connection: keep-alive
+content-type: application/json; charset=utf-8
+
+{
+    "errors": {
+        "inDiet": [
+            "Please specify if the plate is on a diet."
+        ]
+    },
+    "message": "Invalid input"
+}
+
+# Ao não estar autorizado
+
+HTTP/1.1 401 Unauthorized
+Connection: keep-alive
+content-type: application/json; charset=utf-8
+
+{
+    "error": "Unauthorized"
+}
+
+# Ao não encontrar o usuário
+
+HTTP/1.1 404 Not Found
+Connection: keep-alive
+content-type: application/json; charset=utf-8
+
+{
+    "error": "User not found"
+}
+```
+
 ##### Título do endpoint PUT
 Descrição do que o endpoint PUT faz
 ```sh
@@ -640,32 +824,6 @@ curl -X DELETE http://localhost:3001/rota/123 -h "Content-Type: application/json
 Com 🥧 HTTPie
 ```sh
 http DELETE http://localhost:3001/rota/123
-```
-
-Respostas
-```
-# Ao fazer isso com sucesso
-
-HTTP/1.1 204 No Content
-Connection: keep-alive
-Content-type: application/json
-
-# Ao não encontrar isso pelo seu id
-
-HTTP/1.1 404 Not Found
-Connection: keep-alive
-Content-type: application/json
-```
-
-##### Título do endpoint PATCH
-Descrição do que o endpoint PATCH faz
-```sh
-curl -X PATCH http://localhost:3001/rota/123/algo -h "Content-Type: application/json"
-```
-
-Com 🥧 HTTPie
-```sh
-http PATCH http://localhost:3001/rota/123/algo
 ```
 
 Respostas

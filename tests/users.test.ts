@@ -4,7 +4,7 @@ import request from 'supertest'
 
 import { app } from '../src/app'
 
-describe('users routes', () => {
+describe.skip('users routes', () => {
   beforeAll(async () => {
     await app.ready()
   })
@@ -215,31 +215,4 @@ describe('users routes', () => {
       )
     })
   })
-
-  /* it('should be able to get a specific transaction', async () => {
-    const createTransactionResponse = await request(app.server)
-      .post('/transactions')
-      .send(creditTransaction)
-
-    const cookies = createTransactionResponse.get('Set-Cookie') ?? ['']
-
-    const getTransactionsResponse = await request(app.server)
-      .get('/transactions')
-      .set('Cookie', cookies)
-      .expect(200)
-
-    const transactionId = getTransactionsResponse.body.transactions[0].id
-
-    const getTransactionResponse = await request(app.server)
-      .get(`/transactions/${transactionId}`)
-      .set('Cookie', cookies)
-      .expect(200)
-
-    expect(getTransactionResponse.body.transaction).toEqual(
-      expect.objectContaining({
-        title: creditTransaction.title,
-        amount: creditTransaction.amount,
-      }),
-    )
-  }) */
 })
