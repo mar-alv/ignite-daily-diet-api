@@ -72,6 +72,10 @@ HTTP/1.1 201 Created
 Connection: keep-alive
 set-cookie: sessionId=39cad374-1d58-48e3-bb3b-e63cdaf76163; Max-Age=604800; Path=/
 
+{
+    "userId": "dfb402ec-7962-4bb3-a6e2-b1d674430dbd"
+}
+
 # When not providing an attribute
 
 HTTP/1.1 400 Bad Request
@@ -194,15 +198,15 @@ content-type: application/json; charset=utf-8
 }
 ```
 
-##### Search user
-Returns data of an user
+##### Get user
+Gets an user by its id
 ```sh
-curl -X GET "http://localhost:3001/users" -H "Cookie: sessionId=1384df4b-bc5c-400f-9ae4-8dd841aafc3e"
+curl -X GET "http://localhost:3001/users/245f1c46-101d-471a-976f-74878e61c819" -H "Cookie: sessionId=1384df4b-bc5c-400f-9ae4-8dd841aafc3e"
 ```
 
 With 🥧 HTTPie
 ```sh
-http GET http://localhost:3001/users "Cookie:sessionId=1384df4b-bc5c-400f-9ae4-8dd841aafc3e"
+http GET http://localhost:3001/users/245f1c46-101d-471a-976f-74878e61c819 "Cookie:sessionId=1384df4b-bc5c-400f-9ae4-8dd841aafc3e"
 ```
 
 Responses
@@ -221,6 +225,16 @@ content-type: application/json; charset=utf-8
         "sex": "masculine",
         "weight": 100
     }
+}
+
+# When not finding the user
+
+HTTP/1.1 404 Not Found
+Connection: keep-alive
+content-type: application/json; charset=utf-8
+
+{
+    "error": "user not found"
 }
 
 # When being unauthorized
@@ -409,6 +423,10 @@ HTTP/1.1 201 Created
 Connection: keep-alive
 set-cookie: sessionId=39cad374-1d58-48e3-bb3b-e63cdaf76163; Max-Age=604800; Path=/
 
+{
+    "userId": "dfb402ec-7962-4bb3-a6e2-b1d674430dbd"
+}
+
 # Ao não enviar um atributo
 
 HTTP/1.1 400 Bad Request
@@ -532,14 +550,14 @@ content-type: application/json; charset=utf-8
 ```
 
 ##### Buscar usuário
-Retorna dados de um usuário
+Retorna um usuário através do seu id
 ```sh
-curl -X GET "http://localhost:3001/users" -H "Cookie: sessionId=1384df4b-bc5c-400f-9ae4-8dd841aafc3e"
+curl -X GET "http://localhost:3001/users/245f1c46-101d-471a-976f-74878e61c819" -H "Cookie: sessionId=1384df4b-bc5c-400f-9ae4-8dd841aafc3e"
 ```
 
 Com 🥧 HTTPie
 ```sh
-http GET http://localhost:3001/users "Cookie:sessionId=1384df4b-bc5c-400f-9ae4-8dd841aafc3e"
+http GET http://localhost:3001/users/245f1c46-101d-471a-976f-74878e61c819 "Cookie:sessionId=1384df4b-bc5c-400f-9ae4-8dd841aafc3e"
 ```
 
 Respostas
@@ -560,7 +578,17 @@ content-type: application/json; charset=utf-8
     }
 }
 
-# Não estando autorizado
+# Ao não encontrar o usuário
+
+HTTP/1.1 404 Not Found
+Connection: keep-alive
+content-type: application/json; charset=utf-8
+
+{
+    "error": "user not found"
+}
+
+# Ao não estar autorizado
 
 HTTP/1.1 401 Unauthorized
 Connection: keep-alive

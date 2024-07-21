@@ -5,14 +5,11 @@ import { ZodError } from 'zod'
 type FastifyErrorHandler = FastifyInstance['errorHandler']
 
 export const errorHandler: FastifyErrorHandler = (error, request, reply) => {
-  if (error instanceof ZodError) {
-    console.log(error)
-
+  if (error instanceof ZodError)
     return reply.status(400).send({
       message: 'Invalid input',
       errors: error.flatten().fieldErrors,
     })
-  }
 
   if (error instanceof ClientError)
     return reply.status(400).send({
