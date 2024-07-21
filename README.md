@@ -234,7 +234,7 @@ Connection: keep-alive
 content-type: application/json; charset=utf-8
 
 {
-    "error": "user not found"
+    "error": "User not found"
 }
 
 # When being unauthorized
@@ -585,7 +585,7 @@ Connection: keep-alive
 content-type: application/json; charset=utf-8
 
 {
-    "error": "user not found"
+    "error": "User not found"
 }
 
 # Ao não estar autorizado

@@ -79,7 +79,7 @@ export async function usersRoutes(app: FastifyInstance) {
         })
         .first()
 
-      if (!user) return reply.status(404).send({ error: 'user not found' })
+      if (!user) return reply.status(404).send({ error: 'User not found' })
 
       return { user }
     },
