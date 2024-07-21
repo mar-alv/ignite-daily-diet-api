@@ -194,21 +194,15 @@ content-type: application/json; charset=utf-8
 }
 ```
 
-##### GET endpoint title
-GET endpoint description of what it does
+##### Search user
+Returns data of an user
 ```sh
-curl -X GET 'http://localhost:3001/route' -h "Content-Type: application/json"
-```
-```sh
-curl -X GET 'http://localhost:3001/route?query_parameter=here' -h "Content-Type: application/json"
+curl -X GET "http://localhost:3001/users" -H "Cookie: sessionId=1384df4b-bc5c-400f-9ae4-8dd841aafc3e"
 ```
 
 With 🥧 HTTPie
 ```sh
-http GET http://localhost:3001/route
-```
-```sh
-http GET http://localhost:3001/route?query_parameter=here
+http GET http://localhost:3001/users "Cookie:sessionId=1384df4b-bc5c-400f-9ae4-8dd841aafc3e"
 ```
 
 Responses
@@ -217,19 +211,27 @@ Responses
 
 HTTP/1.1 200 OK
 Connection: keep-alive
-Content-type: application/json
+content-type: application/json; charset=utf-8
 
 {
-	...
+    "user": {
+        "age": 30,
+        "height": 210,
+        "name": "mar alv",
+        "sex": "masculine",
+        "weight": 100
+    }
 }
 
-# Nothing found
+# When being unauthorized
 
-HTTP/1.1 200 OK
+HTTP/1.1 401 Unauthorized
 Connection: keep-alive
-Content-type: application/json
+content-type: application/json; charset=utf-8
 
-{}
+{
+    "error": "Unauthorized"
+}
 ```
 
 ##### PUT endpoint title
@@ -529,21 +531,15 @@ content-type: application/json; charset=utf-8
 }
 ```
 
-##### Título do endpoint GET
-Descrição do que o endpoint GET faz
+##### Buscar usuário
+Retorna dados de um usuário
 ```sh
-curl -X GET 'http://localhost:3001/rota' -h "Content-Type: application/json"
-```
-```sh
-curl -X GET 'http://localhost:3001/rota?parametro=aqui' -h "Content-Type: application/json"
+curl -X GET "http://localhost:3001/users" -H "Cookie: sessionId=1384df4b-bc5c-400f-9ae4-8dd841aafc3e"
 ```
 
 Com 🥧 HTTPie
 ```sh
-http GET http://localhost:3001/rota
-```
-```sh
-http GET http://localhost:3001/rota?parametro=aqui
+http GET http://localhost:3001/users "Cookie:sessionId=1384df4b-bc5c-400f-9ae4-8dd841aafc3e"
 ```
 
 Respostas
@@ -552,19 +548,27 @@ Respostas
 
 HTTP/1.1 200 OK
 Connection: keep-alive
-Content-type: application/json
+content-type: application/json; charset=utf-8
 
 {
-	...
+    "user": {
+        "age": 30,
+        "height": 210,
+        "name": "mar alv",
+        "sex": "masculine",
+        "weight": 100
+    }
 }
 
-# Não encontrando nada
+# Não estando autorizado
 
-HTTP/1.1 200 OK
+HTTP/1.1 401 Unauthorized
 Connection: keep-alive
-Content-type: application/json
+content-type: application/json; charset=utf-8
 
-{}
+{
+    "error": "Unauthorized"
+}
 ```
 
 ##### Título do endpoint PUT
