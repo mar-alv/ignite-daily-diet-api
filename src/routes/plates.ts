@@ -7,13 +7,12 @@ import { knex } from '../database'
 
 export async function platesRoutes(app: FastifyInstance) {
   app.post(
-    '/',
+    '/:userId/plates',
     {
       preHandler: [checkIfSessionIdExists],
     },
     async (request, reply) => {
       const createPlateBodySchema = z.object({
-        userId: z.string().uuid({ message: 'A valid user ID is required.' }),
         name: z
           .string()
           .min(2, { message: 'Name must be at least 2 characters long' }),
@@ -23,9 +22,17 @@ export async function platesRoutes(app: FastifyInstance) {
         }),
       })
 
-      const { description, inDiet, name, userId } = createPlateBodySchema.parse(
+      const createPlateRouteParamsSchema = z.object({
+        userId: z.string().uuid({
+          message: 'Invalid user ID',
+        }),
+      })
+
+      const { description, inDiet, name } = createPlateBodySchema.parse(
         request.body,
       )
+
+      const { userId } = createPlateRouteParamsSchema.parse(request.params)
 
       const { sessionId } = request.cookies
 

@@ -227,6 +227,21 @@ content-type: application/json; charset=utf-8
     }
 }
 
+# When sending an invalid uuid
+
+HTTP/1.1 400 Bad Request
+Connection: keep-alive
+content-type: application/json; charset=utf-8
+
+{
+    "errors": {
+        "id": [
+            "Invalid user ID"
+        ]
+    },
+    "message": "Invalid input"
+}
+
 # When not finding the user
 
 HTTP/1.1 404 Not Found
@@ -251,12 +266,12 @@ content-type: application/json; charset=utf-8
 ##### Create plate
 Creates a new plate for a specific user
 ```sh
-curl -X POST http://localhost:3001/plates -h "Content-Type: application/json" -d '{"userId":"835fc927-94e8-4bda-be46-db2f12dca0f9","name":"Grilled Chicken Salad","description":"A fresh salad with grilled chicken, mixed greens, and a light vinaigrette.","inDiet":true}'
+curl -X POST http://localhost:3001/users/835fc927-94e8-4bda-be46-db2f12dca0f9/plates -h "Content-Type: application/json" -d '{"name":"Grilled Chicken Salad","description":"A fresh salad with grilled chicken, mixed greens, and a light vinaigrette.","inDiet":true}'
 ```
 
 With 🥧 HTTPie
 ```sh
-http POST http://localhost:3001/plates < httpie/create-plate.json
+http POST http://localhost:3001/users/835fc927-94e8-4bda-be46-db2f12dca0f9/plates < httpie/create-plate.json
 ```
 
 Responses
@@ -287,7 +302,7 @@ content-type: application/json; charset=utf-8
     "message": "Invalid input"
 }
 
-# When providing a valid user id
+# When providing an invalid user id
 
 HTTP/1.1 400 Bad Request
 Connection: keep-alive
@@ -296,7 +311,7 @@ content-type: application/json; charset=utf-8
 {
     "errors": {
         "userId": [
-            "A valid user ID is required."
+            "Invalid user ID"
         ]
     },
     "message": "Invalid input"
@@ -372,7 +387,7 @@ HTTP/1.1 204 No Content
 Connection: keep-alive
 Content-type: application/json
 
-# When not providing a valid request body
+# When providing an invalid request body
 
 HTTP/1.1 400 Bad Request
 Connection: keep-alive
@@ -666,6 +681,21 @@ content-type: application/json; charset=utf-8
     }
 }
 
+# Ao enviar um id inválido
+
+HTTP/1.1 400 Bad Request
+Connection: keep-alive
+content-type: application/json; charset=utf-8
+
+{
+    "errors": {
+        "id": [
+            "Invalid user ID"
+        ]
+    },
+    "message": "Invalid input"
+}
+
 # Ao não encontrar o usuário
 
 HTTP/1.1 404 Not Found
@@ -690,12 +720,12 @@ content-type: application/json; charset=utf-8
 ##### Criar refeição
 Cria uma nova refeição para um usuário específico
 ```sh
-curl -X POST http://localhost:3001/users -h "Content-Type: application/json" -d '{"userId":"835fc927-94e8-4bda-be46-db2f12dca0f9","name":"Salada de Frango Grelhado","description":"Uma salada fresca com frango grelhado, folhas verdes e um vinagrete leve.","inDiet":true}'
+curl -X POST http://localhost:3001/users/835fc927-94e8-4bda-be46-db2f12dca0f9/plates -h "Content-Type: application/json" -d '{"name":"Salada de Frango Grelhado","description":"Uma salada fresca com frango grelhado, folhas verdes e um vinagrete leve.","inDiet":true}'
 ```
 
 Com 🥧 HTTPie
 ```sh
-http POST http://localhost:3001/plates < httpie/create-plate.json
+http POST http://localhost:3001/users/835fc927-94e8-4bda-be46-db2f12dca0f9/plates < httpie/create-plate.json
 ```
 
 Respostas
@@ -735,7 +765,7 @@ content-type: application/json; charset=utf-8
 {
     "errors": {
         "userId": [
-            "A valid user ID is required."
+            "Invalid user ID"
         ]
     },
     "message": "Invalid input"

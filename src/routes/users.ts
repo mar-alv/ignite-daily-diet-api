@@ -66,7 +66,9 @@ export async function usersRoutes(app: FastifyInstance) {
       const { sessionId } = request.cookies
 
       const getUserRouteParamsSchema = z.object({
-        id: z.string().uuid(),
+        id: z.string().uuid({
+          message: 'Invalid user ID',
+        }),
       })
 
       const { id } = getUserRouteParamsSchema.parse(request.params)

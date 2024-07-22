@@ -12,7 +12,7 @@ app.setErrorHandler(errorHandler)
 
 app.register(cookie)
 app.register(platesRoutes, {
-  prefix: 'plates',
+  prefix: 'users',
 })
 app.register(usersRoutes, {
   prefix: 'users',

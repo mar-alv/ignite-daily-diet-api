@@ -34,10 +34,9 @@ describe('plates routes', () => {
       const cookies = createUserResponse.get('Set-Cookie') ?? ['']
 
       const response = await request(app.server)
-        .post('/plates')
+        .post(`/users/invalid-uuid/plates`)
         .set('Cookie', cookies)
         .send({
-          userId: 'invalid-uuid',
           name: 'Salada de Frango Grelhado',
           description:
             'Uma salada fresca com frango grelhado, folhas verdes e um vinagrete leve.',
@@ -47,7 +46,7 @@ describe('plates routes', () => {
 
       expect(JSON.parse(response.text)).toEqual({
         errors: {
-          userId: ['A valid user ID is required.'],
+          userId: ['Invalid user ID'],
         },
         message: 'Invalid input',
       })
@@ -68,10 +67,9 @@ describe('plates routes', () => {
       const cookies = createUserResponse.get('Set-Cookie') ?? ['']
 
       const response = await request(app.server)
-        .post('/plates')
+        .post('/users/835fc927-94e8-4bda-be46-db2f12dca0f9/plates')
         .set('Cookie', cookies)
         .send({
-          userId: '835fc927-94e8-4bda-be46-db2f12dca0f9',
           name: 'A',
           description:
             'Uma salada fresca com frango grelhado, folhas verdes e um vinagrete leve.',
@@ -102,10 +100,9 @@ describe('plates routes', () => {
       const cookies = createUserResponse.get('Set-Cookie') ?? ['']
 
       const response = await request(app.server)
-        .post('/plates')
+        .post('/users/835fc927-94e8-4bda-be46-db2f12dca0f9/plates')
         .set('Cookie', cookies)
         .send({
-          userId: '835fc927-94e8-4bda-be46-db2f12dca0f9',
           name: 'Salada de Frango Grelhado',
           description:
             'Uma salada fresca com frango grelhado, folhas verdes e um vinagrete leve.',
