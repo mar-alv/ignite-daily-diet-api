@@ -60,4 +60,102 @@ export async function platesRoutes(app: FastifyInstance) {
       })
     },
   )
+
+  app.get(
+    '/:userId/plates',
+    {
+      preHandler: [checkIfSessionIdExists],
+    },
+    async (request, reply) => {
+      const { sessionId } = request.cookies
+
+      const getPlatesRouteParamsSchema = z.object({
+        userId: z.string().uuid({
+          message: 'Invalid user ID',
+        }),
+      })
+
+      const { userId } = getPlatesRouteParamsSchema.parse(request.params)
+
+      const user = await knex('users')
+        .where({
+          id: userId,
+          session_id: sessionId,
+        })
+        .first()
+
+      if (!user) return reply.status(404).send({ error: 'User not found' })
+
+      const plates = await knex('plates')
+        .select(
+          'created_at as createdAt',
+          'description',
+          'id',
+          'in_diet as inDiet',
+          'name',
+          'updated_at as updatedAt',
+        )
+        .where({ user_id: userId })
+
+      return {
+        plates: plates.map((plate) => {
+          return {
+            ...plate,
+            inDiet: Boolean(plate.inDiet),
+          }
+        }),
+      }
+    },
+  )
+
+  app.get(
+    '/:userId/plates/:plateId',
+    {
+      preHandler: [checkIfSessionIdExists],
+    },
+    async (request, reply) => {
+      const { sessionId } = request.cookies
+
+      const getPlateRouteParamsSchema = z.object({
+        plateId: z.string().uuid({
+          message: 'Invalid plate ID',
+        }),
+        userId: z.string().uuid({
+          message: 'Invalid user ID',
+        }),
+      })
+
+      const { plateId, userId } = getPlateRouteParamsSchema.parse(
+        request.params,
+      )
+
+      const user = await knex('users')
+        .where({
+          id: userId,
+          session_id: sessionId,
+        })
+        .first()
+
+      if (!user) return reply.status(404).send({ error: 'User not found' })
+
+      const plate = await knex('plates')
+        .select(
+          'created_at as createdAt',
+          'description',
+          'id',
+          'in_diet as inDiet',
+          'name',
+          'updated_at as updatedAt',
+        )
+        .where({ id: plateId, user_id: userId })
+        .first()
+
+      return {
+        plate: {
+          ...plate,
+          inDiet: Boolean(plate.inDiet),
+        },
+      }
+    },
+  )
 }

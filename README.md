@@ -368,6 +368,165 @@ content-type: application/json; charset=utf-8
 }
 ```
 
+##### Get plates
+Gets all plates added by a specific user
+```sh
+curl -X GET "http://localhost:3001/users/7e04dcd0-8619-4602-bbe3-d9194790ae51/plates" -H "Cookie: sessionId=1384df4b-bc5c-400f-9ae4-8dd841aafc3e"
+```
+
+With 🥧 HTTPie
+```sh
+http GET http://localhost:3001/users/7e04dcd0-8619-4602-bbe3-d9194790ae51/plates "Cookie:sessionId=c0c01f92-f54b-4b1f-a294-d8876267203c; Max-Age=604800; Path=/"
+```
+
+Responses
+```
+# When successfully doing it
+
+HTTP/1.1 200 OK
+Connection: keep-alive
+content-type: application/json; charset=utf-8
+
+{
+    "plates": [
+        {
+            "createdAt": "2024-07-22 23:34:30",
+            "description": "A fresh salad with grilled chicken, mixed greens, and a light vinaigrette.",
+            "id": "dd2786d7-c0e7-4dd1-a435-100728774102",
+            "inDiet": true,
+            "name": "Grilled Chicken Salad",
+            "updatedAt": "2024-07-22 23:34:30"
+        }
+    ]
+}
+
+# When not having plates created
+
+HTTP/1.1 200 OK
+Connection: keep-alive
+content-type: application/json; charset=utf-8
+
+{
+    "plates": []
+}
+
+# When sending an invalid user id
+
+HTTP/1.1 400 Bad Request
+Connection: keep-alive
+content-type: application/json; charset=utf-8
+
+{
+    "errors": {
+        "userId": [
+            "Invalid user ID"
+        ]
+    },
+    "message": "Invalid input"
+}
+
+# When not finding the user
+
+HTTP/1.1 404 Not Found
+Connection: keep-alive
+content-type: application/json; charset=utf-8
+
+{
+    "error": "User not found"
+}
+
+# When being unauthorized
+
+HTTP/1.1 401 Unauthorized
+Connection: keep-alive
+content-type: application/json; charset=utf-8
+
+{
+    "error": "Unauthorized"
+}
+```
+
+##### Get a plate
+Gets a specific plate created by a specific user
+```sh
+curl -X GET "http://localhost:3001/users/7e04dcd0-8619-4602-bbe3-d9194790ae51/plates/dd2786d7-c0e7-4dd1-a435-100728774102" -H "Cookie: sessionId=1384df4b-bc5c-400f-9ae4-8dd841aafc3e"
+```
+
+With 🥧 HTTPie
+```sh
+http GET http://localhost:3001/users/7e04dcd0-8619-4602-bbe3-d9194790ae51/plates/dd2786d7-c0e7-4dd1-a435-100728774102 "Cookie:sessionId=c0c01f92-f54b-4b1f-a294-d8876267203c; Max-Age=604800; Path=/"
+```
+
+Responses
+```
+# When successfully doing it
+
+HTTP/1.1 200 OK
+Connection: keep-alive
+content-type: application/json; charset=utf-8
+
+{
+    "plate": {
+				"createdAt": "2024-07-22 23:34:30",
+				"description": "A fresh salad with grilled chicken, mixed greens, and a light vinaigrette.",
+				"id": "dd2786d7-c0e7-4dd1-a435-100728774102",
+				"inDiet": true,
+				"name": "Grilled Chicken Salad",
+				"updatedAt": "2024-07-22 23:34:30"
+		}
+}
+
+# When sending an invalid user id
+
+HTTP/1.1 400 Bad Request
+Connection: keep-alive
+content-type: application/json; charset=utf-8
+
+{
+    "errors": {
+        "userId": [
+            "Invalid user ID"
+        ]
+    },
+    "message": "Invalid input"
+}
+
+# When sending an invalid plateId
+
+HTTP/1.1 400 Bad Request
+Connection: keep-alive
+content-type: application/json; charset=utf-8
+
+{
+    "errors": {
+        "plateId": [
+            "Invalid plate ID"
+        ]
+    },
+    "message": "Invalid input"
+}
+
+# When not finding the user
+
+HTTP/1.1 404 Not Found
+Connection: keep-alive
+content-type: application/json; charset=utf-8
+
+{
+    "error": "User not found"
+}
+
+# When being unauthorized
+
+HTTP/1.1 401 Unauthorized
+Connection: keep-alive
+content-type: application/json; charset=utf-8
+
+{
+    "error": "Unauthorized"
+}
+```
+
 ##### PUT endpoint title
 PUT endpoint description of what it does
 ```sh
@@ -819,6 +978,165 @@ content-type: application/json; charset=utf-8
 
 {
     "error": "User not found"
+}
+```
+
+##### Buscar refeições
+Retorna todas as refeições adicionadas por um usuário específico
+```sh
+curl -X GET "http://localhost:3001/users/7e04dcd0-8619-4602-bbe3-d9194790ae51/plates" -H "Cookie: sessionId=1384df4b-bc5c-400f-9ae4-8dd841aafc3e"
+```
+
+Com 🥧 HTTPie
+```sh
+http GET http://localhost:3001/users/7e04dcd0-8619-4602-bbe3-d9194790ae51/plates "Cookie:sessionId=c0c01f92-f54b-4b1f-a294-d8876267203c; Max-Age=604800; Path=/"
+```
+
+Respostas
+```
+# Ao fazer isso com sucesso
+
+HTTP/1.1 200 OK
+Connection: keep-alive
+content-type: application/json; charset=utf-8
+
+{
+    "plates": [
+        {
+						"createdAt": "2024-07-22 23:34:30",
+						"description": "Uma salada fresca com frango grelhado, folhas verdes e um vinagrete leve.",
+						"id": "dd2786d7-c0e7-4dd1-a435-100728774102",
+						"inDiet": true,
+						"name": "Salada de Frango Grelhado",
+						"updatedAt": "2024-07-22 23:34:30"
+        }
+    ]
+}
+
+# Ao não ter refeições adicionadas
+
+HTTP/1.1 200 OK
+Connection: keep-alive
+content-type: application/json; charset=utf-8
+
+{
+    "plates": []
+}
+
+# Ao enviar um id de usuário inválido
+
+HTTP/1.1 400 Bad Request
+Connection: keep-alive
+content-type: application/json; charset=utf-8
+
+{
+    "errors": {
+        "userId": [
+            "Invalid user ID"
+        ]
+    },
+    "message": "Invalid input"
+}
+
+# Ao não encontrar o usuário
+
+HTTP/1.1 404 Not Found
+Connection: keep-alive
+content-type: application/json; charset=utf-8
+
+{
+    "error": "User not found"
+}
+
+# Ao não estar autorizado
+
+HTTP/1.1 401 Unauthorized
+Connection: keep-alive
+content-type: application/json; charset=utf-8
+
+{
+    "error": "Unauthorized"
+}
+```
+
+##### Buscar refeição
+Retorna uma refeição específica criada por um usuário específico
+```sh
+curl -X GET "http://localhost:3001/users/7e04dcd0-8619-4602-bbe3-d9194790ae51/plates/dd2786d7-c0e7-4dd1-a435-100728774102" -H "Cookie: sessionId=1384df4b-bc5c-400f-9ae4-8dd841aafc3e"
+```
+
+com 🥧 HTTPie
+```sh
+http GET http://localhost:3001/users/7e04dcd0-8619-4602-bbe3-d9194790ae51/plates/dd2786d7-c0e7-4dd1-a435-100728774102 "Cookie:sessionId=c0c01f92-f54b-4b1f-a294-d8876267203c; Max-Age=604800; Path=/"
+```
+
+Respostas
+```
+# Ao fazer isso com sucesso
+
+HTTP/1.1 200 OK
+Connection: keep-alive
+content-type: application/json; charset=utf-8
+
+{
+    "plate": {
+				"createdAt": "2024-07-22 23:34:30",
+				"description": "Uma salada fresca com frango grelhado, folhas verdes e um vinagrete leve.",
+				"id": "dd2786d7-c0e7-4dd1-a435-100728774102",
+				"inDiet": true,
+				"name": "Salada de Frango Grelhado",
+				"updatedAt": "2024-07-22 23:34:30"
+    }
+}
+
+# Ao enviar um id de usuário inválido
+
+HTTP/1.1 400 Bad Request
+Connection: keep-alive
+content-type: application/json; charset=utf-8
+
+{
+    "errors": {
+        "userId": [
+            "Invalid user ID"
+        ]
+    },
+    "message": "Invalid input"
+}
+
+# Ao enviar um id de refeição inválido
+
+HTTP/1.1 400 Bad Request
+Connection: keep-alive
+content-type: application/json; charset=utf-8
+
+{
+    "errors": {
+        "plateId": [
+            "Invalid plate ID"
+        ]
+    },
+    "message": "Invalid input"
+}
+
+# Ao não encontrar o usuário
+
+HTTP/1.1 404 Not Found
+Connection: keep-alive
+content-type: application/json; charset=utf-8
+
+{
+    "error": "User not found"
+}
+
+# Ao não estar autorizado
+
+HTTP/1.1 401 Unauthorized
+Connection: keep-alive
+content-type: application/json; charset=utf-8
+
+{
+    "error": "Unauthorized"
 }
 ```
 

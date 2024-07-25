@@ -136,7 +136,7 @@ describe.skip('users routes', () => {
   })
 
   describe('get user tests', () => {
-    it('should return an unauthorized error if session id is not present in the cookies', async () => {
+    it('should not be able to get an user if sessionId is not present in the cookies', async () => {
       const createUserResponse = await request(app.server).post('/users').send({
         name: 'mar alv',
         age: 30,
@@ -157,7 +157,7 @@ describe.skip('users routes', () => {
       })
     })
 
-    it('should not return an user if the user id is invalid', async () => {
+    it('should not be able to get an user if userId is invalid', async () => {
       const createUserRequest = {
         name: 'mar alv',
         age: 30,
@@ -182,7 +182,7 @@ describe.skip('users routes', () => {
       })
     })
 
-    it('should return an user if session id is present in the cookies', async () => {
+    it('should be able to get an user', async () => {
       const createUserRequest = {
         name: 'mar alv',
         age: 30,
