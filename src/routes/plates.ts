@@ -150,12 +150,59 @@ export async function platesRoutes(app: FastifyInstance) {
         .where({ id: plateId, user_id: userId })
         .first()
 
+      if (!plate) return reply.status(404).send({ error: 'Plate not found' })
+
       return {
         plate: {
           ...plate,
           inDiet: Boolean(plate.inDiet),
         },
       }
+    },
+  )
+
+  app.delete(
+    '/:userId/plates/:plateId',
+    {
+      preHandler: [checkIfSessionIdExists],
+    },
+    async (request, reply) => {
+      const deletePlateRouteParamsSchema = z.object({
+        plateId: z.string().uuid({
+          message: 'Invalid plate ID',
+        }),
+        userId: z.string().uuid({
+          message: 'Invalid user ID',
+        }),
+      })
+
+      const { sessionId } = request.cookies
+
+      const { plateId, userId } = deletePlateRouteParamsSchema.parse(
+        request.params,
+      )
+
+      const user = await knex('users')
+        .where({
+          id: userId,
+          session_id: sessionId,
+        })
+        .first()
+
+      if (!user) return reply.status(404).send({ error: 'User not found' })
+
+      await knex('plates')
+        .del()
+        .where({
+          id: plateId,
+          user_id: userId,
+        })
+        .then((platesDeleted) => {
+          if (!platesDeleted)
+            reply.status(404).send({ error: 'Plate not found' })
+        })
+
+      return reply.status(204).send()
     },
   )
 }

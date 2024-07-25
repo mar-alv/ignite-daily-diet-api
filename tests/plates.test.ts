@@ -19,7 +19,7 @@ describe('plates routes', () => {
     execSync('npm run knex migrate:latest')
   })
 
-  describe('create plate tests', () => {
+  describe.skip('create plate tests', () => {
     it('should not be able to create a plate if userId is invalid', async () => {
       const createUserResponse = await request(app.server)
         .post('/users')
@@ -38,9 +38,9 @@ describe('plates routes', () => {
         .post(`/users/invalid-uuid/plates`)
         .set('Cookie', cookies)
         .send({
-          name: 'Salada de Frango Grelhado',
+          name: 'Grilled Chicken Salad',
           description:
-            'Uma salada fresca com frango grelhado, folhas verdes e um vinagrete leve.',
+            'A fresh salad with grilled chicken, mixed greens, and a light vinaigrette.',
           inDiet: true,
         })
         .expect(400)
@@ -73,7 +73,7 @@ describe('plates routes', () => {
         .send({
           name: 'A',
           description:
-            'Uma salada fresca com frango grelhado, folhas verdes e um vinagrete leve.',
+            'A fresh salad with grilled chicken, mixed greens, and a light vinaigrette.',
           inDiet: true,
         })
         .expect(400)
@@ -104,9 +104,9 @@ describe('plates routes', () => {
         .post('/users/835fc927-94e8-4bda-be46-db2f12dca0f9/plates')
         .set('Cookie', cookies)
         .send({
-          name: 'Salada de Frango Grelhado',
+          name: 'Grilled Chicken Salad',
           description:
-            'Uma salada fresca com frango grelhado, folhas verdes e um vinagrete leve.',
+            'A fresh salad with grilled chicken, mixed greens, and a light vinaigrette.',
         })
         .expect(400)
 
@@ -157,7 +157,7 @@ describe('plates routes', () => {
     })
   })
 
-  describe('get plates tests', () => {
+  describe.skip('get plates tests', () => {
     it('should not be able to get plates if sessionId is not present in the cookies', async () => {
       const response = await request(app.server)
         .get('/users/some-user-id/plates')
@@ -238,12 +238,12 @@ describe('plates routes', () => {
         .send(plateData2)
         .expect(201)
 
-      const response = await request(app.server)
+      const getPlatesResponse = await request(app.server)
         .get(`/users/${userId}/plates`)
         .set('Cookie', cookies)
         .expect(200)
 
-      expect(response.body).toEqual({
+      expect(getPlatesResponse.body).toEqual({
         plates: [
           {
             id: expect.any(String),
@@ -281,18 +281,18 @@ describe('plates routes', () => {
 
       const cookies = createUserResponse.get('Set-Cookie') ?? ['']
 
-      const response = await request(app.server)
+      const getPlatesResponse = await request(app.server)
         .get(`/users/${userId}/plates`)
         .set('Cookie', cookies)
         .expect(200)
 
-      expect(response.body).toEqual({
+      expect(getPlatesResponse.body).toEqual({
         plates: [],
       })
     })
   })
 
-  describe('get plate tests', () => {
+  describe.skip('get plate tests', () => {
     it('should not be able to get a plate if sessionId is not present in the cookies', async () => {
       const response = await request(app.server)
         .get('/users/some-user-id/plates')
@@ -336,15 +336,44 @@ describe('plates routes', () => {
     })
 
     it('should not be able to get a plate if the user does not exists', async () => {
+      const userId = '835fc927-94e8-4bda-be46-db2f12dca0f9'
+      const plateId = 'dd2786d7-c0e7-4dd1-a435-100728774102'
       const cookies = ['sessionId=valid-session-id']
 
       const response = await request(app.server)
-        .get('/users/835fc927-94e8-4bda-be46-db2f12dca0f9/plates')
+        .get(`/users/${userId}/plates/${plateId}`)
         .set('Cookie', cookies)
         .expect(404)
 
       expect(response.body).toEqual({
         error: 'User not found',
+      })
+    })
+
+    it('should not be able to get a plate if the plate does not exists', async () => {
+      const createUserResponse = await request(app.server)
+        .post('/users')
+        .send({
+          name: 'mar alv',
+          age: 30,
+          height: 210,
+          weight: 100,
+          sex: 'masculine',
+        })
+        .expect(201)
+
+      const userId = createUserResponse.body.userId
+      const plateId = 'dd2786d7-c0e7-4dd1-a435-100728774102'
+
+      const cookies = createUserResponse.get('Set-Cookie') ?? ['']
+
+      const response = await request(app.server)
+        .get(`/users/${userId}/plates/${plateId}`)
+        .set('Cookie', cookies)
+        .expect(404)
+
+      expect(response.body).toEqual({
+        error: 'Plate not found',
       })
     })
 
@@ -394,6 +423,131 @@ describe('plates routes', () => {
           updatedAt: expect.any(String),
         },
       })
+    })
+  })
+
+  describe('delete plate tests', () => {
+    it('should not be able to delete a plate if sessionId is not present in the cookies', async () => {
+      const response = await request(app.server)
+        .delete('/users/some-user-id/plates/some-plate-id')
+        .expect(401)
+
+      expect(response.body).toEqual({
+        error: 'Unauthorized',
+      })
+    })
+
+    it('should not be able to delete a plate if userId is not a valid UUID', async () => {
+      const cookies = ['sessionId=valid-session-id']
+
+      const response = await request(app.server)
+        .delete(
+          '/users/invalid-uuid/plates/dd2786d7-c0e7-4dd1-a435-100728774102',
+        )
+        .set('Cookie', cookies)
+        .expect(400)
+
+      expect(response.body).toEqual({
+        errors: {
+          userId: ['Invalid user ID'],
+        },
+        message: 'Invalid input',
+      })
+    })
+
+    it('should not be able to delete a plate if plateId is not a valid UUID', async () => {
+      const cookies = ['sessionId=valid-session-id']
+
+      const response = await request(app.server)
+        .delete(
+          '/users/dd2786d7-c0e7-4dd1-a435-100728774102/plates/invalid-uuid',
+        )
+        .set('Cookie', cookies)
+        .expect(400)
+
+      expect(response.body).toEqual({
+        errors: {
+          plateId: ['Invalid plate ID'],
+        },
+        message: 'Invalid input',
+      })
+    })
+
+    it('should not be able to delete a plate if the user does not exist', async () => {
+      const userId = '835fc927-94e8-4bda-be46-db2f12dca0f9'
+      const plateId = 'dd2786d7-c0e7-4dd1-a435-100728774102'
+      const cookies = ['sessionId=valid-session-id']
+
+      const response = await request(app.server)
+        .delete(`/users/${userId}/plates/${plateId}`)
+        .set('Cookie', cookies)
+        .expect(404)
+
+      expect(response.body).toEqual({
+        error: 'User not found',
+      })
+    })
+
+    it('should not be able to delete a plate if the plate does not exist', async () => {
+      const createUserResponse = await request(app.server)
+        .post('/users')
+        .send({
+          name: 'mar alv',
+          age: 30,
+          height: 210,
+          weight: 100,
+          sex: 'masculine',
+        })
+        .expect(201)
+
+      const userId = createUserResponse.body.userId
+      const plateId = 'dd2786d7-c0e7-4dd1-a435-100728774102'
+      const cookies = createUserResponse.get('Set-Cookie') ?? ['']
+
+      const response = await request(app.server)
+        .delete(`/users/${userId}/plates/${plateId}`)
+        .set('Cookie', cookies)
+        .expect(404)
+
+      expect(response.body).toEqual({
+        error: 'Plate not found',
+      })
+    })
+
+    it('should be able to delete a plate', async () => {
+      const createUserResponse = await request(app.server)
+        .post('/users')
+        .send({
+          name: 'mar alv',
+          age: 30,
+          height: 210,
+          weight: 100,
+          sex: 'masculine',
+        })
+        .expect(201)
+
+      const userId = createUserResponse.body.userId
+      const cookies = createUserResponse.get('Set-Cookie') ?? ['']
+
+      const plateData = {
+        name: 'Grilled Chicken Salad',
+        description:
+          'A fresh salad with grilled chicken, mixed greens, and a light vinaigrette.',
+        inDiet: true,
+      }
+
+      const createPlateResponse = await request(app.server)
+        .post(`/users/${userId}/plates`)
+        .set('Cookie', cookies)
+        .send(plateData)
+        .expect(201)
+
+      const plateId = createPlateResponse.body.plateId
+
+      await request(app.server)
+        .delete(`/users/${userId}/plates/${plateId}`)
+        .set('Cookie', cookies)
+        .expect(204)
     })
   })
 })

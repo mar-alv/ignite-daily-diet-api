@@ -491,7 +491,7 @@ content-type: application/json; charset=utf-8
     "message": "Invalid input"
 }
 
-# When sending an invalid plateId
+# When sending an invalid plate id
 
 HTTP/1.1 400 Bad Request
 Connection: keep-alive
@@ -514,6 +514,16 @@ content-type: application/json; charset=utf-8
 
 {
     "error": "User not found"
+}
+
+# When not finding the plate
+
+HTTP/1.1 404 Not Found
+Connection: keep-alive
+content-type: application/json; charset=utf-8
+
+{
+    "error": "Plate not found"
 }
 
 # When being unauthorized
@@ -559,15 +569,15 @@ Connection: keep-alive
 Content-type: application/json
 ```
 
-##### DELETE endpoint title
-DELETE endpoint description of what it does
+##### Delete plate
+Deletes a specific plate created by a specific user
 ```sh
-curl -X DELETE http://localhost:3001/route/123 -h "Content-Type: application/json"
+curl -X DELETE "http://localhost:3001/users/7e04dcd0-8619-4602-bbe3-d9194790ae51/plates/dd2786d7-c0e7-4dd1-a435-100728774102" -H "Cookie: sessionId=1384df4b-bc5c-400f-9ae4-8dd841aafc3e"
 ```
 
 With 🥧 HTTPie
 ```sh
-http DELETE http://localhost:3001/tasks/123
+http DELETE http://localhost:3001/users/7e04dcd0-8619-4602-bbe3-d9194790ae51/plates/dd2786d7-c0e7-4dd1-a435-100728774102 "Cookie:sessionId=c0c01f92-f54b-4b1f-a294-d8876267203c; Max-Age=604800; Path=/"
 ```
 
 Responses
@@ -576,13 +586,66 @@ Responses
 
 HTTP/1.1 204 No Content
 Connection: keep-alive
-Content-type: application/json
 
-# When not finding it by the id
+# When sending an invalid user id
+
+HTTP/1.1 400 Bad Request
+Connection: keep-alive
+content-type: application/json; charset=utf-8
+
+{
+    "errors": {
+        "userId": [
+            "Invalid user ID"
+        ]
+    },
+    "message": "Invalid input"
+}
+
+# When sending an invalid plate id
+
+HTTP/1.1 400 Bad Request
+Connection: keep-alive
+content-type: application/json; charset=utf-8
+
+{
+    "errors": {
+        "plateId": [
+            "Invalid plate ID"
+        ]
+    },
+    "message": "Invalid input"
+}
+
+# When not finding the user
 
 HTTP/1.1 404 Not Found
 Connection: keep-alive
-Content-type: application/json
+content-type: application/json; charset=utf-8
+
+{
+    "error": "User not found"
+}
+
+# When not finding the plate
+
+HTTP/1.1 404 Not Found
+Connection: keep-alive
+content-type: application/json; charset=utf-8
+
+{
+    "error": "Plate not found"
+}
+
+# When being unauthorized
+
+HTTP/1.1 401 Unauthorized
+Connection: keep-alive
+content-type: application/json; charset=utf-8
+
+{
+    "error": "Unauthorized"
+}
 ```
 
 ##### Non existing route
@@ -945,7 +1008,7 @@ content-type: application/json; charset=utf-8
     "message": "Invalid input"
 }
 
-# Ao enviar uma especificidade inválida do prato pertencer à dieta
+# Ao enviar uma especificidade inválida da refeição pertencer à dieta
 
 HTTP/1.1 400 Bad Request
 Connection: keep-alive
@@ -1129,6 +1192,16 @@ content-type: application/json; charset=utf-8
     "error": "User not found"
 }
 
+# Ao não encontrar a refeição
+
+HTTP/1.1 404 Not Found
+Connection: keep-alive
+content-type: application/json; charset=utf-8
+
+{
+    "error": "Plate not found"
+}
+
 # Ao não estar autorizado
 
 HTTP/1.1 401 Unauthorized
@@ -1172,15 +1245,15 @@ Connection: keep-alive
 Content-type: application/json
 ```
 
-##### Título do endpoint DELETE
-Descrição do que o endpoint DELETE faz
+##### Remover refeição
+Remove uma refeição específica criada por um usuário específico
 ```sh
-curl -X DELETE http://localhost:3001/rota/123 -h "Content-Type: application/json"
+curl -X DELETE http://localhost:3001/users/7e04dcd0-8619-4602-bbe3-d9194790ae51/plates/99a10a6e-6dbe-4223-829b-f8ed97c34ad8 -h "Content-Type: application/json"
 ```
 
 Com 🥧 HTTPie
 ```sh
-http DELETE http://localhost:3001/rota/123
+http DELETE http://localhost:3001/users/7e04dcd0-8619-4602-bbe3-d9194790ae51/plates/99a10a6e-6dbe-4223-829b-f8ed97c34ad8 "Cookie:sessionId=c0c01f92-f54b-4b1f-a294-d8876267203c; Max-Age=604800; Path=/"
 ```
 
 Respostas
@@ -1189,13 +1262,66 @@ Respostas
 
 HTTP/1.1 204 No Content
 Connection: keep-alive
-Content-type: application/json
 
-# Ao não encontrar isso pelo seu id
+# Ao enviar um id de usuário inválido
+
+HTTP/1.1 400 Bad Request
+Connection: keep-alive
+content-type: application/json; charset=utf-8
+
+{
+    "errors": {
+        "userId": [
+            "Invalid user ID"
+        ]
+    },
+    "message": "Invalid input"
+}
+
+# Ao enviar um id de refeição inválido
+
+HTTP/1.1 400 Bad Request
+Connection: keep-alive
+content-type: application/json; charset=utf-8
+
+{
+    "errors": {
+        "plateId": [
+            "Invalid plate ID"
+        ]
+    },
+    "message": "Invalid input"
+}
+
+# Ao não encontrar o usuário
 
 HTTP/1.1 404 Not Found
 Connection: keep-alive
-Content-type: application/json
+content-type: application/json; charset=utf-8
+
+{
+    "error": "User not found"
+}
+
+# Ao não encontrar a refeição
+
+HTTP/1.1 404 Not Found
+Connection: keep-alive
+content-type: application/json; charset=utf-8
+
+{
+    "error": "Plate not found"
+}
+
+# Ao não estar autorizado
+
+HTTP/1.1 401 Unauthorized
+Connection: keep-alive
+content-type: application/json; charset=utf-8
+
+{
+    "error": "Unauthorized"
+}
 ```
 
 ##### Rota não existente
