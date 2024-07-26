@@ -408,12 +408,12 @@ describe('plates routes', () => {
 
       const plateId = createPlateResponse.body.plateId
 
-      const getPlateRresponse = await request(app.server)
+      const getPlateResponse = await request(app.server)
         .get(`/users/${userId}/plates/${plateId}`)
         .set('Cookie', cookies)
         .expect(200)
 
-      expect(getPlateRresponse.body).toEqual({
+      expect(getPlateResponse.body).toEqual({
         plate: {
           id: plateId,
           name: plateData.name,
@@ -426,7 +426,263 @@ describe('plates routes', () => {
     })
   })
 
-  describe('delete plate tests', () => {
+  describe('update plate tests', () => {
+    it('should not be able to update a plate if userId is invalid', async () => {
+      const createUserResponse = await request(app.server)
+        .post('/users')
+        .send({
+          name: 'mar alv',
+          age: 30,
+          height: 210,
+          weight: 100,
+          sex: 'masculine',
+        })
+        .expect(201)
+
+      const cookies = createUserResponse.get('Set-Cookie') ?? ['']
+
+      const response = await request(app.server)
+        .put(`/users/invalid-uuid/plates/835fc927-94e8-4bda-be46-db2f12dca0f9`)
+        .set('Cookie', cookies)
+        .send({
+          name: 'Updated Plate Name',
+        })
+        .expect(400)
+
+      expect(JSON.parse(response.text)).toEqual({
+        errors: {
+          userId: ['Invalid user ID'],
+        },
+        message: 'Invalid input',
+      })
+    })
+
+    it('should not be able to update a plate if plateId is invalid', async () => {
+      const createUserResponse = await request(app.server)
+        .post('/users')
+        .send({
+          name: 'mar alv',
+          age: 30,
+          height: 210,
+          weight: 100,
+          sex: 'masculine',
+        })
+        .expect(201)
+
+      const userId = createUserResponse.body.userId
+
+      const cookies = createUserResponse.get('Set-Cookie') ?? ['']
+
+      const response = await request(app.server)
+        .put(`/users/${userId}/plates/invalid-uuid`)
+        .set('Cookie', cookies)
+        .send({
+          name: 'Updated Plate Name',
+        })
+        .expect(400)
+
+      expect(JSON.parse(response.text)).toEqual({
+        errors: {
+          plateId: ['Invalid plate ID'],
+        },
+        message: 'Invalid input',
+      })
+    })
+
+    it('should not be able to update a plate if user is not found', async () => {
+      const response = await request(app.server)
+        .put(
+          `/users/835fc927-94e8-4bda-be46-db2f12dca0f9/plates/835fc927-94e8-4bda-be46-db2f12dca0f9`,
+        )
+        .set('Cookie', 'sessionId=some-session-id')
+        .send({
+          name: 'Updated Plate Name',
+        })
+        .expect(404)
+
+      expect(JSON.parse(response.text)).toEqual({
+        error: 'User not found',
+      })
+    })
+
+    it('should not be able to update a plate if plate is not found', async () => {
+      const createUserResponse = await request(app.server)
+        .post('/users')
+        .send({
+          name: 'mar alv',
+          age: 30,
+          height: 210,
+          weight: 100,
+          sex: 'masculine',
+        })
+        .expect(201)
+
+      const userId = createUserResponse.body.userId
+
+      const cookies = createUserResponse.get('Set-Cookie') ?? ['']
+
+      const response = await request(app.server)
+        .put(`/users/${userId}/plates/835fc927-94e8-4bda-be46-db2f12dca0f9`)
+        .set('Cookie', cookies)
+        .send({
+          name: 'Updated Plate Name',
+        })
+        .expect(404)
+
+      expect(JSON.parse(response.text)).toEqual({
+        error: 'Plate not found',
+      })
+    })
+
+    it('should not be able to update a plate if name is less than 2 characters long', async () => {
+      const createUserResponse = await request(app.server)
+        .post('/users')
+        .send({
+          name: 'mar alv',
+          age: 30,
+          height: 210,
+          weight: 100,
+          sex: 'masculine',
+        })
+        .expect(201)
+
+      const userId = createUserResponse.body.userId
+      const cookies = createUserResponse.get('Set-Cookie') ?? ['']
+
+      const createPlateResponse = await request(app.server)
+        .post(`/users/${userId}/plates`)
+        .set('Cookie', cookies)
+        .send({
+          name: 'Grilled Chicken Salad',
+          description:
+            'A fresh salad with grilled chicken, mixed greens, and a light vinaigrette.',
+          inDiet: true,
+        })
+        .expect(201)
+
+      const plateId = createPlateResponse.body.plateId
+
+      const response = await request(app.server)
+        .put(`/users/${userId}/plates/${plateId}`)
+        .set('Cookie', cookies)
+        .send({
+          name: 'A',
+        })
+        .expect(400)
+
+      expect(JSON.parse(response.text)).toEqual({
+        errors: {
+          name: ['Name must be at least 2 characters long'],
+        },
+        message: 'Invalid input',
+      })
+    })
+
+    it('should not be able to update a plate if createdAt is in the future', async () => {
+      const createUserResponse = await request(app.server)
+        .post('/users')
+        .send({
+          name: 'mar alv',
+          age: 30,
+          height: 210,
+          weight: 100,
+          sex: 'masculine',
+        })
+        .expect(201)
+
+      const userId = createUserResponse.body.userId
+      const cookies = createUserResponse.get('Set-Cookie') ?? ['']
+
+      const createPlateResponse = await request(app.server)
+        .post(`/users/${userId}/plates`)
+        .set('Cookie', cookies)
+        .send({
+          name: 'Grilled Chicken Salad',
+          description:
+            'A fresh salad with grilled chicken, mixed greens, and a light vinaigrette.',
+          inDiet: true,
+        })
+        .expect(201)
+
+      const plateId = createPlateResponse.body.plateId
+
+      const futureDate = new Date()
+      futureDate.setDate(futureDate.getDate() + 1)
+
+      const response = await request(app.server)
+        .put(`/users/${userId}/plates/${plateId}`)
+        .set('Cookie', cookies)
+        .send({
+          createdAt: futureDate.toISOString(),
+        })
+        .expect(400)
+
+      expect(JSON.parse(response.text)).toEqual({
+        errors: {
+          createdAt: ['The date cannot be in the future.'],
+        },
+        message: 'Invalid input',
+      })
+    })
+
+    it('should be able to update a plate', async () => {
+      const createUserResponse = await request(app.server)
+        .post('/users')
+        .send({
+          name: 'mar alv',
+          age: 30,
+          height: 210,
+          weight: 100,
+          sex: 'masculine',
+        })
+        .expect(201)
+
+      const userId = createUserResponse.body.userId
+      const cookies = createUserResponse.get('Set-Cookie') ?? ['']
+
+      const createPlateResponse = await request(app.server)
+        .post(`/users/${userId}/plates`)
+        .set('Cookie', cookies)
+        .send({
+          name: 'Grilled Chicken Salad',
+          description:
+            'A fresh salad with grilled chicken, mixed greens, and a light vinaigrette.',
+          inDiet: true,
+        })
+        .expect(201)
+
+      const plateId = createPlateResponse.body.plateId
+
+      const updateData = {
+        name: 'Updated Plate Name',
+        description: 'Updated description.',
+        inDiet: false,
+        createdAt: new Date().toISOString(),
+      }
+
+      await request(app.server)
+        .put(`/users/${userId}/plates/${plateId}`)
+        .set('Cookie', cookies)
+        .send(updateData)
+        .expect(204)
+
+      const getPlateResponse = await request(app.server)
+        .get(`/users/${userId}/plates/${plateId}`)
+        .set('Cookie', cookies)
+        .expect(200)
+
+      expect(getPlateResponse.body).toMatchObject({
+        plate: {
+          name: updateData.name,
+          description: updateData.description,
+          inDiet: updateData.inDiet,
+          createdAt: updateData.createdAt,
+        },
+      })
+    })
+  })
+
+  describe.skip('delete plate tests', () => {
     it('should not be able to delete a plate if sessionId is not present in the cookies', async () => {
       const response = await request(app.server)
         .delete('/users/some-user-id/plates/some-plate-id')

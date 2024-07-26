@@ -537,15 +537,15 @@ content-type: application/json; charset=utf-8
 }
 ```
 
-##### PUT endpoint title
-PUT endpoint description of what it does
+##### Update plate
+Update a specific plate's data of a specific user
 ```sh
-curl -X PUT http://localhost:3001/route/123- -h "Content-Type: application/json" -d '{"request_body":"here"}'
+curl -X PUT http://localhost:3001/users/835fc927-94e8-4bda-be46-db2f12dca0f9/plates/2b5d459e-55c3-48a7-ac21-86dc8c1049b7  -h "Content-Type: application/json" -d '{"name":"Grilled Chicken Salad","description":"A fresh salad with grilled chicken, mixed greens, and a light vinaigrette.","inDiet":true,"createdAt":"2024-07-25T00:00:00.000Z"}'
 ```
 
 With 🥧 HTTPie
 ```sh
-http PUT http://localhost:3001/tasks/123 < httpie/put.json
+http PUT http://localhost:3001/users/7e04dcd0-8619-4602-bbe3-d9194790ae51/plates/2b5d459e-55c3-48a7-ac21-86dc8c1049b7 "Cookie:sessionId=c0c01f92-f54b-4b1f-a294-d8876267203c; Max-Age=604800; Path=/" < httpie/update-plate.json
 ```
 
 Responses
@@ -554,19 +554,111 @@ Responses
 
 HTTP/1.1 204 No Content
 Connection: keep-alive
-Content-type: application/json
 
-# When providing an invalid request body
+# When providing an invalid user id
 
 HTTP/1.1 400 Bad Request
 Connection: keep-alive
-Content-type: application/json
+content-type: application/json; charset=utf-8
 
-# When not finding it by the id
+{
+    "errors": {
+        "userId": [
+            "Invalid user ID"
+        ]
+    },
+    "message": "Invalid input"
+}
+
+# When providing an invalid plate id
+
+HTTP/1.1 400 Bad Request
+Connection: keep-alive
+content-type: application/json; charset=utf-8
+
+{
+    "errors": {
+        "plateId": [
+            "Invalid plate ID"
+        ]
+    },
+    "message": "Invalid input"
+}
+
+# When providing a name that is too short
+
+HTTP/1.1 400 Bad Request
+Connection: keep-alive
+content-type: application/json; charset=utf-8
+
+{
+    "errors": {
+        "name": [
+            "Name must be at least 2 characters long"
+        ]
+    },
+    "message": "Invalid input"
+}
+
+# When providing an invalid specification of the plate belonging to the diet
+
+HTTP/1.1 400 Bad Request
+Connection: keep-alive
+content-type: application/json; charset=utf-8
+
+{
+    "errors": {
+        "inDiet": [
+            "Please specify if the plate is on a diet."
+        ]
+    },
+    "message": "Invalid input"
+}
+
+# When providing a creation date that is set in the future
+
+HTTP/1.1 400 Bad Request
+Connection: keep-alive
+content-type: application/json; charset=utf-8
+
+{
+    "errors": {
+        "createdAt": [
+            "The date cannot be in the future."
+        ]
+    },
+    "message": "Invalid input"
+}
+
+# When being unauthorized
+
+HTTP/1.1 401 Unauthorized
+Connection: keep-alive
+content-type: application/json; charset=utf-8
+
+{
+    "error": "Unauthorized"
+}
+
+# When not finding the user
 
 HTTP/1.1 404 Not Found
 Connection: keep-alive
-Content-type: application/json
+content-type: application/json; charset=utf-8
+
+{
+    "error": "User not found"
+}
+
+# When not finding the plate
+
+HTTP/1.1 404 Not Found
+Connection: keep-alive
+content-type: application/json; charset=utf-8
+
+{
+    "error": "PLate not found"
+}
 ```
 
 ##### Delete plate
@@ -1213,15 +1305,15 @@ content-type: application/json; charset=utf-8
 }
 ```
 
-##### Título do endpoint PUT
-Descrição do que o endpoint PUT faz
+##### Atualizar refeição
+Atualiza os dados de uma refeição de um usuário
 ```sh
-curl -X PUT http://localhost:3001/rota/123- -h "Content-Type: application/json" -d '{"corpo_da_requisicao":"aqui"}'
+curl -X PUT http://localhost:3001/users/835fc927-94e8-4bda-be46-db2f12dca0f9/plates/2b5d459e-55c3-48a7-ac21-86dc8c1049b7  -h "Content-Type: application/json" -d '{"name":"Salada de Frango Grelhado","description":"Uma salada fresca com frango grelhado, folhas verdes e um vinagrete leve.","inDiet":true},"createdAt":"2024-07-25T00:00:00.000Z"}'
 ```
 
 Com 🥧 HTTPie
 ```sh
-http PUT http://localhost:3001/rota/123 < httpie/put.json
+http PUT http://localhost:3001/users/7e04dcd0-8619-4602-bbe3-d9194790ae51/plates/2b5d459e-55c3-48a7-ac21-86dc8c1049b7 "Cookie:sessionId=c0c01f92-f54b-4b1f-a294-d8876267203c; Max-Age=604800; Path=/" < httpie/update-plate.json
 ```
 
 Respostas
@@ -1230,19 +1322,111 @@ Respostas
 
 HTTP/1.1 204 No Content
 Connection: keep-alive
-Content-type: application/json
 
-# Ao enviar um corpo de requisição inválido
+# Ao enviar um id de usuário inválido
 
 HTTP/1.1 400 Bad Request
 Connection: keep-alive
-Content-type: application/json
+content-type: application/json; charset=utf-8
 
-# Ao não encontrar isso pelo seu id
+{
+    "errors": {
+        "userId": [
+            "Invalid user ID"
+        ]
+    },
+    "message": "Invalid input"
+}
+
+# Ao enviar um id de refeição inválido
+
+HTTP/1.1 400 Bad Request
+Connection: keep-alive
+content-type: application/json; charset=utf-8
+
+{
+    "errors": {
+        "plateId": [
+            "Invalid plate ID"
+        ]
+    },
+    "message": "Invalid input"
+}
+
+# Ao enviar um nome muito curto
+
+HTTP/1.1 400 Bad Request
+Connection: keep-alive
+content-type: application/json; charset=utf-8
+
+{
+    "errors": {
+        "name": [
+            "Name must be at least 2 characters long"
+        ]
+    },
+    "message": "Invalid input"
+}
+
+# Ao enviar uma especificidade inválida da refeição pertencer à dieta
+
+HTTP/1.1 400 Bad Request
+Connection: keep-alive
+content-type: application/json; charset=utf-8
+
+{
+    "errors": {
+        "inDiet": [
+            "Please specify if the plate is on a diet."
+        ]
+    },
+    "message": "Invalid input"
+}
+
+# Ao enviar uma data no futuro
+
+HTTP/1.1 400 Bad Request
+Connection: keep-alive
+content-type: application/json; charset=utf-8
+
+{
+    "errors": {
+        "createdAt": [
+            "The date cannot be in the future."
+        ]
+    },
+    "message": "Invalid input"
+}
+
+# Ao não estar autorizado
+
+HTTP/1.1 401 Unauthorized
+Connection: keep-alive
+content-type: application/json; charset=utf-8
+
+{
+    "error": "Unauthorized"
+}
+
+# Ao não encontrar o usuário
 
 HTTP/1.1 404 Not Found
 Connection: keep-alive
-Content-type: application/json
+content-type: application/json; charset=utf-8
+
+{
+    "error": "User not found"
+}
+
+# Ao não encontrar a refeição
+
+HTTP/1.1 404 Not Found
+Connection: keep-alive
+content-type: application/json; charset=utf-8
+
+{
+    "error": "PLate not found"
+}
 ```
 
 ##### Remover refeição

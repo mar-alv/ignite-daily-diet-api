@@ -161,6 +161,85 @@ export async function platesRoutes(app: FastifyInstance) {
     },
   )
 
+  app.put(
+    '/:userId/plates/:plateId',
+    {
+      preHandler: [checkIfSessionIdExists],
+    },
+    async (request, reply) => {
+      const updatePlateBodySchema = z.object({
+        name: z
+          .string()
+          .min(2, { message: 'Name must be at least 2 characters long' })
+          .optional(),
+        description: z.string().optional(),
+        inDiet: z
+          .boolean({
+            message: 'Please specify if the plate is on a diet.',
+          })
+          .optional(),
+        createdAt: z.coerce
+          .date()
+          .refine((date) => date <= new Date(), {
+            message: 'The date cannot be in the future.',
+          })
+          .optional(),
+      })
+
+      const updatePlateRouteParamsSchema = z.object({
+        plateId: z.string().uuid({
+          message: 'Invalid plate ID',
+        }),
+        userId: z.string().uuid({
+          message: 'Invalid user ID',
+        }),
+      })
+
+      const { sessionId } = request.cookies
+
+      const { plateId, userId } = updatePlateRouteParamsSchema.parse(
+        request.params,
+      )
+
+      const { createdAt, description, inDiet, name } =
+        updatePlateBodySchema.parse(request.body)
+
+      const user = await knex('users')
+        .where({
+          id: userId,
+          session_id: sessionId,
+        })
+        .first()
+
+      if (!user) return reply.status(404).send({ error: 'User not found' })
+
+      const plate = await knex('plates')
+        .where({
+          id: plateId,
+          user_id: userId,
+        })
+        .first()
+
+      if (!plate) return reply.status(404).send({ error: 'Plate not found' })
+
+      await knex('plates')
+        .update({
+          name: name ?? plate.name,
+          description: description ?? plate.description,
+          in_diet: inDiet ?? plate.in_diet,
+          created_at: createdAt?.toISOString() ?? plate.created_at,
+          updated_at: new Date().toISOString(),
+        })
+        .where({
+          id: plateId,
+          user_id: userId,
+        })
+        .returning(['id'])
+
+      return reply.status(204).send()
+    },
+  )
+
   app.delete(
     '/:userId/plates/:plateId',
     {
