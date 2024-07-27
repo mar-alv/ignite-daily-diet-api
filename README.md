@@ -1,4 +1,4 @@
-<h1 align='center'>🚧 Ignite Daily Diet API in progress... 🚧</h1>
+<h1 align='center'> Ignite Daily Diet API </h1>
 
 <div align='center'>
 
