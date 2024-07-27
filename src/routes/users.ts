@@ -86,4 +86,61 @@ export async function usersRoutes(app: FastifyInstance) {
       return { user }
     },
   )
+
+  app.get(
+    '/:id/metrics',
+    {
+      preHandler: [checkIfSessionIdExists],
+    },
+    async (request, reply) => {
+      const { sessionId } = request.cookies
+
+      const getUserRouteParamsSchema = z.object({
+        id: z.string().uuid({
+          message: 'Invalid user ID',
+        }),
+      })
+
+      const { id } = getUserRouteParamsSchema.parse(request.params)
+
+      const user = await knex('users')
+        .where({
+          id,
+          session_id: sessionId,
+        })
+        .first()
+
+      if (!user) return reply.status(404).send({ error: 'User not found' })
+
+      const plates = await knex('plates')
+        .where({
+          user_id: id,
+        })
+        .orderBy('created_at')
+
+      const { bestDietSequence } = plates.reduce(
+        (acc, meal) => {
+          if (meal.in_diet) {
+            acc.currentSequence += 1
+          } else {
+            acc.currentSequence = 0
+          }
+
+          if (acc.currentSequence > acc.bestDietSequence) {
+            acc.bestDietSequence = acc.currentSequence
+          }
+
+          return acc
+        },
+        { bestDietSequence: 0, currentSequence: 0 },
+      )
+
+      return {
+        bestDietSequence,
+        platesAmount: plates.length,
+        platesOnDiet: plates.filter((plate) => plate.in_diet).length,
+        platesOutOfDiet: plates.filter((plate) => !plate.in_diet).length,
+      }
+    },
+  )
 }

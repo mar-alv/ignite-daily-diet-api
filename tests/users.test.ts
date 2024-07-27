@@ -4,7 +4,7 @@ import request from 'supertest'
 
 import { app } from '../src/app'
 
-describe.skip('users routes', () => {
+describe('users routes', () => {
   beforeAll(async () => {
     await app.ready()
   })
@@ -213,6 +213,126 @@ describe.skip('users routes', () => {
           sex: createUserRequest.sex,
         }),
       )
+    })
+  })
+
+  describe('get user metrics', () => {
+    it('should not be able to get metrics if sessionId is not present in the cookies', async () => {
+      const response = await request(app.server)
+        .get('/users/some-user-id/metrics')
+        .expect(401)
+
+      expect(response.body).toEqual({
+        error: 'Unauthorized',
+      })
+    })
+
+    it('should not be able to get metrics if userId is not a valid UUID', async () => {
+      const cookies = ['sessionId=valid-session-id']
+
+      const response = await request(app.server)
+        .get('/users/invalid-uuid/metrics')
+        .set('Cookie', cookies)
+        .expect(400)
+
+      expect(response.body).toEqual({
+        errors: {
+          id: ['Invalid user ID'],
+        },
+        message: 'Invalid input',
+      })
+    })
+
+    it('should not be able to get metrics if the user does not exist', async () => {
+      const userId = '835fc927-94e8-4bda-be46-db2f12dca0f9'
+      const cookies = ['sessionId=valid-session-id']
+
+      const response = await request(app.server)
+        .get(`/users/${userId}/metrics`)
+        .set('Cookie', cookies)
+        .expect(404)
+
+      expect(response.body).toEqual({
+        error: 'User not found',
+      })
+    })
+
+    it('should return metrics for a user with plates', async () => {
+      const createUserResponse = await request(app.server)
+        .post('/users')
+        .send({
+          name: 'mar alv',
+          age: 30,
+          height: 210,
+          weight: 100,
+          sex: 'masculine',
+        })
+        .expect(201)
+
+      const userId = createUserResponse.body.userId
+      const cookies = createUserResponse.get('Set-Cookie') ?? ['']
+
+      await request(app.server)
+        .post(`/users/${userId}/plates`)
+        .set('Cookie', cookies)
+        .send({
+          name: 'Chicken Salad',
+          description: 'Healthy salad with grilled chicken.',
+          inDiet: true,
+        })
+        .expect(201)
+
+      await request(app.server)
+        .post(`/users/${userId}/plates`)
+        .set('Cookie', cookies)
+        .send({
+          name: 'Pizza',
+          description: 'Delicious cheese pizza.',
+          inDiet: false,
+        })
+        .expect(201)
+
+      const response = await request(app.server)
+        .get(`/users/${userId}/metrics`)
+        .set('Cookie', cookies)
+        .expect(200)
+
+      expect(response.body).toEqual({
+        bestDietSequence: 1,
+        platesAmount: 2,
+        platesOnDiet: 1,
+        platesOutOfDiet: 1,
+      })
+    })
+
+    it('should return metrics for a user with no plates', async () => {
+      const createUserResponse = await request(app.server)
+        .post('/users')
+        .send({
+          name: 'mar alv',
+          age: 30,
+          height: 210,
+          weight: 100,
+          sex: 'masculine',
+        })
+        .expect(201)
+
+      console.log(createUserResponse.get('Set-Cookie'))
+
+      const userId = createUserResponse.body.userId
+      const cookies = createUserResponse.get('Set-Cookie') ?? ['']
+
+      const response = await request(app.server)
+        .get(`/users/${userId}/metrics`)
+        .set('Cookie', cookies)
+        .expect(200)
+
+      expect(response.body).toEqual({
+        bestDietSequence: 0,
+        platesAmount: 0,
+        platesOnDiet: 0,
+        platesOutOfDiet: 0,
+      })
     })
   })
 })

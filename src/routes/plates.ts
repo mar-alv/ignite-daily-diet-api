@@ -52,6 +52,7 @@ export async function platesRoutes(app: FastifyInstance) {
           description: description ?? '',
           in_diet: inDiet,
           user_id: userId,
+          created_at: new Date().toISOString().replace('26', '16'),
         })
         .returning(['id'])
 

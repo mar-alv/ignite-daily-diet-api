@@ -263,8 +263,70 @@ content-type: application/json; charset=utf-8
 }
 ```
 
+##### Get metrics
+Gets an user's metrics
+```sh
+curl -X GET "http://localhost:3001/users/245f1c46-101d-471a-976f-74878e61c819/metrics" -H "Cookie: sessionId=1384df4b-bc5c-400f-9ae4-8dd841aafc3e"
+```
+
+With 🥧 HTTPie
+```sh
+http GET http://localhost:3001/users/245f1c46-101d-471a-976f-74878e61c819/metrics "Cookie:sessionId=1384df4b-bc5c-400f-9ae4-8dd841aafc3e"
+```
+
+Responses
+```
+# When successfully doing it
+
+HTTP/1.1 200 OK
+Connection: keep-alive
+content-type: application/json; charset=utf-8
+
+{
+    "bestDietSequence": 1,
+    "platesAmount": 2,
+    "platesOnDiet": 1,
+    "platesOutOfDiet": 1
+}
+
+# When sending an invalid uuid
+
+HTTP/1.1 400 Bad Request
+Connection: keep-alive
+content-type: application/json; charset=utf-8
+
+{
+    "errors": {
+        "id": [
+            "Invalid user ID"
+        ]
+    },
+    "message": "Invalid input"
+}
+
+# When not finding the user
+
+HTTP/1.1 404 Not Found
+Connection: keep-alive
+content-type: application/json; charset=utf-8
+
+{
+    "error": "User not found"
+}
+
+# When being unauthorized
+
+HTTP/1.1 401 Unauthorized
+Connection: keep-alive
+content-type: application/json; charset=utf-8
+
+{
+    "error": "Unauthorized"
+}
+```
+
 ##### Create plate
-Creates a new plate for a specific user
+Creates a new plate for an user
 ```sh
 curl -X POST http://localhost:3001/users/835fc927-94e8-4bda-be46-db2f12dca0f9/plates -h "Content-Type: application/json" -d '{"name":"Grilled Chicken Salad","description":"A fresh salad with grilled chicken, mixed greens, and a light vinaigrette.","inDiet":true}'
 ```
@@ -369,7 +431,7 @@ content-type: application/json; charset=utf-8
 ```
 
 ##### Get plates
-Gets all plates added by a specific user
+Gets all plates added by an user
 ```sh
 curl -X GET "http://localhost:3001/users/7e04dcd0-8619-4602-bbe3-d9194790ae51/plates" -H "Cookie: sessionId=1384df4b-bc5c-400f-9ae4-8dd841aafc3e"
 ```
@@ -447,7 +509,7 @@ content-type: application/json; charset=utf-8
 ```
 
 ##### Get a plate
-Gets a specific plate created by a specific user
+Gets a plate created by an user
 ```sh
 curl -X GET "http://localhost:3001/users/7e04dcd0-8619-4602-bbe3-d9194790ae51/plates/dd2786d7-c0e7-4dd1-a435-100728774102" -H "Cookie: sessionId=1384df4b-bc5c-400f-9ae4-8dd841aafc3e"
 ```
@@ -538,7 +600,7 @@ content-type: application/json; charset=utf-8
 ```
 
 ##### Update plate
-Update a specific plate's data of a specific user
+Update a plate's data of an user
 ```sh
 curl -X PUT http://localhost:3001/users/835fc927-94e8-4bda-be46-db2f12dca0f9/plates/2b5d459e-55c3-48a7-ac21-86dc8c1049b7  -h "Content-Type: application/json" -d '{"name":"Grilled Chicken Salad","description":"A fresh salad with grilled chicken, mixed greens, and a light vinaigrette.","inDiet":true,"createdAt":"2024-07-25T00:00:00.000Z"}'
 ```
@@ -662,7 +724,7 @@ content-type: application/json; charset=utf-8
 ```
 
 ##### Delete plate
-Deletes a specific plate created by a specific user
+Deletes a plate created by an user
 ```sh
 curl -X DELETE "http://localhost:3001/users/7e04dcd0-8619-4602-bbe3-d9194790ae51/plates/dd2786d7-c0e7-4dd1-a435-100728774102" -H "Cookie: sessionId=1384df4b-bc5c-400f-9ae4-8dd841aafc3e"
 ```
@@ -1031,8 +1093,70 @@ content-type: application/json; charset=utf-8
 }
 ```
 
+##### Pegar métricas
+Retorna as métricas de um usuário
+```sh
+curl -X GET "http://localhost:3001/users/245f1c46-101d-471a-976f-74878e61c819/metrics" -H "Cookie: sessionId=1384df4b-bc5c-400f-9ae4-8dd841aafc3e"
+```
+
+Com 🥧 HTTPie
+```sh
+http GET http://localhost:3001/users/245f1c46-101d-471a-976f-74878e61c819/metrics "Cookie:sessionId=1384df4b-bc5c-400f-9ae4-8dd841aafc3e"
+```
+
+Respostas
+```
+# Ao fazer isso com sucesso
+
+HTTP/1.1 200 OK
+Connection: keep-alive
+content-type: application/json; charset=utf-8
+
+{
+    "bestDietSequence": 1,
+    "platesAmount": 2,
+    "platesOnDiet": 1,
+    "platesOutOfDiet": 1
+}
+
+# Ao enviar um id inválido
+
+HTTP/1.1 400 Bad Request
+Connection: keep-alive
+content-type: application/json; charset=utf-8
+
+{
+    "errors": {
+        "id": [
+            "Invalid user ID"
+        ]
+    },
+    "message": "Invalid input"
+}
+
+# Ao não encontrar o usuário
+
+HTTP/1.1 404 Not Found
+Connection: keep-alive
+content-type: application/json; charset=utf-8
+
+{
+    "error": "User not found"
+}
+
+# Ao não estar autorizado
+
+HTTP/1.1 401 Unauthorized
+Connection: keep-alive
+content-type: application/json; charset=utf-8
+
+{
+    "error": "Unauthorized"
+}
+```
+
 ##### Criar refeição
-Cria uma nova refeição para um usuário específico
+Cria uma nova refeição para um usuário
 ```sh
 curl -X POST http://localhost:3001/users/835fc927-94e8-4bda-be46-db2f12dca0f9/plates -h "Content-Type: application/json" -d '{"name":"Salada de Frango Grelhado","description":"Uma salada fresca com frango grelhado, folhas verdes e um vinagrete leve.","inDiet":true}'
 ```
@@ -1137,7 +1261,7 @@ content-type: application/json; charset=utf-8
 ```
 
 ##### Buscar refeições
-Retorna todas as refeições adicionadas por um usuário específico
+Retorna todas as refeições adicionadas por um usuário
 ```sh
 curl -X GET "http://localhost:3001/users/7e04dcd0-8619-4602-bbe3-d9194790ae51/plates" -H "Cookie: sessionId=1384df4b-bc5c-400f-9ae4-8dd841aafc3e"
 ```
@@ -1215,7 +1339,7 @@ content-type: application/json; charset=utf-8
 ```
 
 ##### Buscar refeição
-Retorna uma refeição específica criada por um usuário específico
+Retorna uma refeição criada por um usuário
 ```sh
 curl -X GET "http://localhost:3001/users/7e04dcd0-8619-4602-bbe3-d9194790ae51/plates/dd2786d7-c0e7-4dd1-a435-100728774102" -H "Cookie: sessionId=1384df4b-bc5c-400f-9ae4-8dd841aafc3e"
 ```
@@ -1430,7 +1554,7 @@ content-type: application/json; charset=utf-8
 ```
 
 ##### Remover refeição
-Remove uma refeição específica criada por um usuário específico
+Remove uma refeição criada por um usuário
 ```sh
 curl -X DELETE http://localhost:3001/users/7e04dcd0-8619-4602-bbe3-d9194790ae51/plates/99a10a6e-6dbe-4223-829b-f8ed97c34ad8 -h "Content-Type: application/json"
 ```

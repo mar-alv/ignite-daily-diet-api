@@ -19,7 +19,7 @@ describe('plates routes', () => {
     execSync('npm run knex migrate:latest')
   })
 
-  describe.skip('create plate tests', () => {
+  describe('create plate tests', () => {
     it('should not be able to create a plate if userId is invalid', async () => {
       const createUserResponse = await request(app.server)
         .post('/users')
@@ -157,7 +157,7 @@ describe('plates routes', () => {
     })
   })
 
-  describe.skip('get plates tests', () => {
+  describe('get plates tests', () => {
     it('should not be able to get plates if sessionId is not present in the cookies', async () => {
       const response = await request(app.server)
         .get('/users/some-user-id/plates')
@@ -292,7 +292,7 @@ describe('plates routes', () => {
     })
   })
 
-  describe.skip('get plate tests', () => {
+  describe('get plate tests', () => {
     it('should not be able to get a plate if sessionId is not present in the cookies', async () => {
       const response = await request(app.server)
         .get('/users/some-user-id/plates')
@@ -682,7 +682,7 @@ describe('plates routes', () => {
     })
   })
 
-  describe.skip('delete plate tests', () => {
+  describe('delete plate tests', () => {
     it('should not be able to delete a plate if sessionId is not present in the cookies', async () => {
       const response = await request(app.server)
         .delete('/users/some-user-id/plates/some-plate-id')
