@@ -118,10 +118,11 @@ export async function usersRoutes(app: FastifyInstance) {
         })
         .orderBy('created_at')
 
-      const { bestDietSequence } = plates.reduce(
+      const { bestDietSequence, platesInDiet } = plates.reduce(
         (acc, meal) => {
           if (meal.in_diet) {
             acc.currentSequence += 1
+            acc.platesInDiet += 1
           } else {
             acc.currentSequence = 0
           }
@@ -132,14 +133,20 @@ export async function usersRoutes(app: FastifyInstance) {
 
           return acc
         },
-        { bestDietSequence: 0, currentSequence: 0 },
+        { bestDietSequence: 0, currentSequence: 0, platesInDiet: 0 },
       )
+
+      const totalPlates = plates.length
+      const platesOutDiet = totalPlates - platesInDiet
+      const dietPercentage =
+        totalPlates > 0 ? (platesInDiet / totalPlates) * 100 : 0
 
       return {
         bestDietSequence,
-        platesAmount: plates.length,
-        platesOnDiet: plates.filter((plate) => plate.in_diet).length,
-        platesOutOfDiet: plates.filter((plate) => !plate.in_diet).length,
+        platesAmount: totalPlates,
+        dietPercentage: Number(dietPercentage),
+        platesOnDiet: platesInDiet,
+        platesOutOfDiet: platesOutDiet,
       }
     },
   )

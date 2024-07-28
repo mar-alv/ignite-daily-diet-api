@@ -19,7 +19,7 @@ describe('users routes', () => {
   })
 
   describe('create user tests', () => {
-    it('should not be able to create an user if name is less than 3 characters long', async () => {
+    it('should not be able to create a user if the name is less than 3 characters long', async () => {
       const response = await request(app.server)
         .post('/users')
         .send({
@@ -39,7 +39,7 @@ describe('users routes', () => {
       })
     })
 
-    it('should not be able to create an user if age is less than 12', async () => {
+    it('should not be able to create a user if age is less than 12', async () => {
       const response = await request(app.server)
         .post('/users')
         .send({
@@ -59,7 +59,7 @@ describe('users routes', () => {
       })
     })
 
-    it('should not be able to create an user if height is less than 130 cm', async () => {
+    it('should not be able to create a user if height is less than 130 cm', async () => {
       const response = await request(app.server)
         .post('/users')
         .send({
@@ -79,7 +79,7 @@ describe('users routes', () => {
       })
     })
 
-    it('should not be able to create an user if weight is less than 30 kg', async () => {
+    it('should not be able to create a user if weight is less than 30 kg', async () => {
       const response = await request(app.server)
         .post('/users')
         .send({
@@ -99,7 +99,7 @@ describe('users routes', () => {
       })
     })
 
-    it('should not be able to create an user if sex is not "masculine" or "feminine"', async () => {
+    it('should not be able to create a user if sex is not "masculine" or "feminine"', async () => {
       const response = await request(app.server)
         .post('/users')
         .send({
@@ -136,7 +136,7 @@ describe('users routes', () => {
   })
 
   describe('get user tests', () => {
-    it('should not be able to get an user if sessionId is not present in the cookies', async () => {
+    it('should not be able to get a user if sessionId is not present in the cookies', async () => {
       const createUserResponse = await request(app.server).post('/users').send({
         name: 'mar alv',
         age: 30,
@@ -157,7 +157,7 @@ describe('users routes', () => {
       })
     })
 
-    it('should not be able to get an user if userId is invalid', async () => {
+    it('should not be able to get a user if userId is invalid', async () => {
       const createUserRequest = {
         name: 'mar alv',
         age: 30,
@@ -182,7 +182,7 @@ describe('users routes', () => {
       })
     })
 
-    it('should be able to get an user', async () => {
+    it('should be able to get a user', async () => {
       const createUserRequest = {
         name: 'mar alv',
         age: 30,
@@ -300,6 +300,7 @@ describe('users routes', () => {
       expect(response.body).toEqual({
         bestDietSequence: 1,
         platesAmount: 2,
+        dietPercentage: 50,
         platesOnDiet: 1,
         platesOutOfDiet: 1,
       })
@@ -330,6 +331,7 @@ describe('users routes', () => {
       expect(response.body).toEqual({
         bestDietSequence: 0,
         platesAmount: 0,
+        dietPercentage: 0,
         platesOnDiet: 0,
         platesOutOfDiet: 0,
       })
