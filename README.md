@@ -284,6 +284,7 @@ content-type: application/json; charset=utf-8
 
 {
     "bestDietSequence": 1,
+		"dietPercentage": 50,
     "platesAmount": 2,
     "platesOnDiet": 1,
     "platesOutOfDiet": 1
