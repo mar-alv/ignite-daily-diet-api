@@ -100,22 +100,45 @@ export async function platesRoutes(app: FastifyInstance) {
 
       const plates = await knex('plates')
         .select(
-          'created_at as createdAt',
+          knex.raw('date(created_at) as createdAt'),
+          knex.raw('date(updated_at) as updatedAt'),
+          'created_at',
           'description',
           'id',
           'in_diet as inDiet',
           'name',
-          'updated_at as updatedAt',
         )
         .where({ user_id: userId })
+        .groupBy(
+          'createdAt',
+          'updatedAt',
+          'description',
+          'id',
+          'inDiet',
+          'name',
+        )
+        .orderBy('createdAt', 'asc')
+
+      const platesGroupedByCreatedAtDate = plates
+        .reverse()
+        .reduce((acc, item) => {
+          const date = item.createdAt.split(' ')[0]
+
+          if (!acc[date]) {
+            acc[date] = []
+          }
+
+          acc[date].push({
+            ...item,
+            inDiet: Boolean(item.inDiet),
+            createdAt: item.created_at,
+          })
+
+          return acc
+        }, {})
 
       return {
-        plates: plates.map((plate) => {
-          return {
-            ...plate,
-            inDiet: Boolean(plate.inDiet),
-          }
-        }),
+        plates: platesGroupedByCreatedAtDate,
       }
     },
   )
