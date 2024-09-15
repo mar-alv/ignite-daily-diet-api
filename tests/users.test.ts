@@ -318,8 +318,6 @@ describe('users routes', () => {
         })
         .expect(201)
 
-      console.log(createUserResponse.get('Set-Cookie'))
-
       const userId = createUserResponse.body.userId
       const cookies = createUserResponse.get('Set-Cookie') ?? ['']
 

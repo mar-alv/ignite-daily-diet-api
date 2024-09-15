@@ -4,6 +4,7 @@ import { z } from 'zod'
 
 import { checkIfSessionIdExists } from '../middlewares/check-if-session-id-exists'
 import { knex } from '../database'
+import { dayjs } from '../libs/dayjs'
 
 export async function platesRoutes(app: FastifyInstance) {
   app.post(
@@ -20,6 +21,12 @@ export async function platesRoutes(app: FastifyInstance) {
         inDiet: z.boolean({
           message: 'Please specify if the plate is on a diet.',
         }),
+        createdAt: z
+          .string()
+          .optional()
+          .transform((date) => {
+            return dayjs.toDate(date)
+          }),
       })
 
       const createPlateRouteParamsSchema = z.object({
@@ -28,9 +35,8 @@ export async function platesRoutes(app: FastifyInstance) {
         }),
       })
 
-      const { description, inDiet, name } = createPlateBodySchema.parse(
-        request.body,
-      )
+      const { createdAt, description, inDiet, name } =
+        createPlateBodySchema.parse(request.body)
 
       const { userId } = createPlateRouteParamsSchema.parse(request.params)
 
@@ -45,6 +51,10 @@ export async function platesRoutes(app: FastifyInstance) {
 
       if (!user) return reply.status(404).send({ error: 'User not found' })
 
+      const createdAtDate = createdAt
+        ? new Date(createdAt).toISOString()
+        : new Date().toISOString()
+
       const plate = await knex('plates')
         .insert({
           id: randomUUID(),
@@ -52,7 +62,8 @@ export async function platesRoutes(app: FastifyInstance) {
           description: description ?? '',
           in_diet: inDiet,
           user_id: userId,
-          created_at: new Date().toISOString().replace('26', '16'),
+          created_at: createdAtDate,
+          updated_at: createdAtDate,
         })
         .returning(['id'])
 
@@ -180,11 +191,11 @@ export async function platesRoutes(app: FastifyInstance) {
           })
           .optional(),
         createdAt: z.coerce
-          .date()
-          .refine((date) => date <= new Date(), {
-            message: 'The date cannot be in the future.',
-          })
-          .optional(),
+          .string()
+          .optional()
+          .transform((date) => {
+            return dayjs.toDate(date)
+          }),
       })
 
       const updatePlateRouteParamsSchema = z.object({
@@ -223,12 +234,16 @@ export async function platesRoutes(app: FastifyInstance) {
 
       if (!plate) return reply.status(404).send({ error: 'Plate not found' })
 
+      const createdAtDate = createdAt
+        ? new Date(createdAt).toISOString()
+        : plate.created_at
+
       await knex('plates')
         .update({
           name: name ?? plate.name,
           description: description ?? plate.description,
           in_diet: inDiet ?? plate.in_diet,
-          created_at: createdAt?.toISOString() ?? plate.created_at,
+          created_at: createdAtDate,
           updated_at: new Date().toISOString(),
         })
         .where({
