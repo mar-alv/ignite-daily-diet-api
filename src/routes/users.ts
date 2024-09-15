@@ -144,7 +144,7 @@ export async function usersRoutes(app: FastifyInstance) {
       return {
         bestDietSequence,
         platesAmount: totalPlates,
-        dietPercentage: Number(dietPercentage),
+        dietPercentage: Number(dietPercentage.toFixed(2)),
         platesOnDiet: platesInDiet,
         platesOutOfDiet: platesOutDiet,
       }
