@@ -2,7 +2,7 @@
 
 <div align='center'>
 
-  ![project-img](./.github/cover.jpg)
+  ![project-img](../.github/cover.jpg)
 
   [![License: MIT](https://img.shields.io/badge/License-MIT-brightgreen.svg)](https://opensource.org/licenses/MIT)
 
