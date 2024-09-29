@@ -25,6 +25,9 @@ export async function platesRoutes(app: FastifyInstance) {
           .string()
           .optional()
           .transform((date) => {
+            if (!date || date === 'invalid-date')
+              date = new Date().toISOString()
+
             return dayjs.toDate(date)
           }),
       })
@@ -51,10 +54,6 @@ export async function platesRoutes(app: FastifyInstance) {
 
       if (!user) return reply.status(404).send({ error: 'User not found' })
 
-      const createdAtDate = createdAt
-        ? new Date(createdAt).toISOString()
-        : new Date().toISOString()
-
       const plate = await knex('plates')
         .insert({
           id: randomUUID(),
@@ -62,8 +61,8 @@ export async function platesRoutes(app: FastifyInstance) {
           description: description ?? '',
           in_diet: inDiet,
           user_id: userId,
-          created_at: createdAtDate,
-          updated_at: createdAtDate,
+          created_at: createdAt,
+          updated_at: createdAt,
         })
         .returning(['id'])
 
@@ -213,12 +212,27 @@ export async function platesRoutes(app: FastifyInstance) {
             message: 'Please specify if the plate is on a diet.',
           })
           .optional(),
-        createdAt: z.coerce
+        createdAt: z
           .string()
           .optional()
-          .transform((date) => {
-            return dayjs.toDate(date)
-          }),
+          .transform((value) => {
+            if (value) return dayjs.toDate(value)
+
+            return undefined
+          })
+          .refine(
+            (isoString) => {
+              if (isoString) {
+                const date = new Date(isoString)
+
+                return date <= new Date()
+              }
+              return true
+            },
+            {
+              message: 'The date cannot be in the future.',
+            },
+          ),
       })
 
       const updatePlateRouteParamsSchema = z.object({

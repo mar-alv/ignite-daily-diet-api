@@ -1,6 +1,9 @@
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest'
 import { execSync } from 'child_process'
 import request from 'supertest'
+
+import dayjs from 'dayjs'
+
 import { z } from 'zod'
 
 import { app } from '../src/app'
@@ -139,6 +142,7 @@ describe('plates routes', () => {
         description:
           'Uma salada fresca com frango grelhado, folhas verdes e um vinagrete leve.',
         inDiet: true,
+        createdAt: '2024-09-28T12:00:00Z',
       }
 
       const createPlateResponse = await request(app.server)
@@ -243,26 +247,36 @@ describe('plates routes', () => {
         .set('Cookie', cookies)
         .expect(200)
 
-      expect(getPlatesResponse.body).toEqual({
-        plates: [
-          {
+      const expectedPlates = {
+        plates: expect.any(Object),
+      }
+
+      expect(getPlatesResponse.body).toMatchObject(expectedPlates)
+
+      const dates = Object.keys(getPlatesResponse.body.plates)
+      const platesForDate1 = getPlatesResponse.body.plates[dates[0]]
+
+      expect(platesForDate1.length).toBeGreaterThanOrEqual(2)
+      expect(platesForDate1).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
             id: expect.any(String),
             name: plateData1.name,
             description: plateData1.description,
             inDiet: plateData1.inDiet,
             createdAt: expect.any(String),
             updatedAt: expect.any(String),
-          },
-          {
+          }),
+          expect.objectContaining({
             id: expect.any(String),
             name: plateData2.name,
             description: plateData2.description,
             inDiet: plateData2.inDiet,
             createdAt: expect.any(String),
             updatedAt: expect.any(String),
-          },
-        ],
-      })
+          }),
+        ]),
+      )
     })
 
     it('should be able to get an empty list of plates if the user exists but has no plates', async () => {
@@ -287,7 +301,7 @@ describe('plates routes', () => {
         .expect(200)
 
       expect(getPlatesResponse.body).toEqual({
-        plates: [],
+        plates: {},
       })
     })
   })
@@ -295,7 +309,7 @@ describe('plates routes', () => {
   describe('get plate tests', () => {
     it('should not be able to get a plate if sessionId is not present in the cookies', async () => {
       const response = await request(app.server)
-        .get('/users/some-user-id/plates')
+        .get('/users/some-user-id/plates/some-plate-id')
         .expect(401)
 
       expect(response.body).toEqual({
@@ -307,7 +321,7 @@ describe('plates routes', () => {
       const cookies = ['sessionId=valid-session-id']
 
       const response = await request(app.server)
-        .get('/users/invalid-uuid/plates')
+        .get('/users/invalid-uuid/plates/835fc927-94e8-4bda-be46-db2f12dca0f9')
         .set('Cookie', cookies)
         .expect(400)
 
@@ -335,7 +349,7 @@ describe('plates routes', () => {
       })
     })
 
-    it('should not be able to get a plate if the user does not exists', async () => {
+    it('should not be able to get a plate if the user does not exist', async () => {
       const userId = '835fc927-94e8-4bda-be46-db2f12dca0f9'
       const plateId = 'dd2786d7-c0e7-4dd1-a435-100728774102'
       const cookies = ['sessionId=valid-session-id']
@@ -350,7 +364,7 @@ describe('plates routes', () => {
       })
     })
 
-    it('should not be able to get a plate if the plate does not exists', async () => {
+    it('should not be able to get a plate if the plate does not exist', async () => {
       const createUserResponse = await request(app.server)
         .post('/users')
         .send({
@@ -449,7 +463,7 @@ describe('plates routes', () => {
         })
         .expect(400)
 
-      expect(JSON.parse(response.text)).toEqual({
+      expect(response.body).toEqual({
         errors: {
           userId: ['Invalid user ID'],
         },
@@ -470,7 +484,6 @@ describe('plates routes', () => {
         .expect(201)
 
       const userId = createUserResponse.body.userId
-
       const cookies = createUserResponse.get('Set-Cookie') ?? ['']
 
       const response = await request(app.server)
@@ -481,7 +494,7 @@ describe('plates routes', () => {
         })
         .expect(400)
 
-      expect(JSON.parse(response.text)).toEqual({
+      expect(response.body).toEqual({
         errors: {
           plateId: ['Invalid plate ID'],
         },
@@ -500,7 +513,7 @@ describe('plates routes', () => {
         })
         .expect(404)
 
-      expect(JSON.parse(response.text)).toEqual({
+      expect(response.body).toEqual({
         error: 'User not found',
       })
     })
@@ -518,7 +531,6 @@ describe('plates routes', () => {
         .expect(201)
 
       const userId = createUserResponse.body.userId
-
       const cookies = createUserResponse.get('Set-Cookie') ?? ['']
 
       const response = await request(app.server)
@@ -529,7 +541,7 @@ describe('plates routes', () => {
         })
         .expect(404)
 
-      expect(JSON.parse(response.text)).toEqual({
+      expect(response.body).toEqual({
         error: 'Plate not found',
       })
     })
@@ -570,7 +582,7 @@ describe('plates routes', () => {
         })
         .expect(400)
 
-      expect(JSON.parse(response.text)).toEqual({
+      expect(response.body).toEqual({
         errors: {
           name: ['Name must be at least 2 characters long'],
         },
@@ -617,7 +629,7 @@ describe('plates routes', () => {
         })
         .expect(400)
 
-      expect(JSON.parse(response.text)).toEqual({
+      expect(response.body).toEqual({
         errors: {
           createdAt: ['The date cannot be in the future.'],
         },
@@ -676,9 +688,13 @@ describe('plates routes', () => {
           name: updateData.name,
           description: updateData.description,
           inDiet: updateData.inDiet,
-          createdAt: updateData.createdAt,
         },
       })
+
+      const responseCreatedAt = dayjs(getPlateResponse.body.plate.createdAt)
+      const updateCreatedAt = dayjs(updateData.createdAt)
+
+      expect(responseCreatedAt.isSame(updateCreatedAt, 'second')).toBe(true)
     })
   })
 
@@ -804,6 +820,15 @@ describe('plates routes', () => {
         .delete(`/users/${userId}/plates/${plateId}`)
         .set('Cookie', cookies)
         .expect(204)
+
+      const getResponse = await request(app.server)
+        .get(`/users/${userId}/plates/${plateId}`)
+        .set('Cookie', cookies)
+        .expect(404)
+
+      expect(getResponse.body).toEqual({
+        error: 'Plate not found',
+      })
     })
   })
 })
